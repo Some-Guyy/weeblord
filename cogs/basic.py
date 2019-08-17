@@ -8,19 +8,19 @@ class Basic(commands.Cog):
 
     # Define a new command
     @commands.command(
-        name='ping',
-        description='The ping command',
-        aliases=['p']
+        name="ping",
+        description="To check if I'm alive.",
+        aliases=["p"]
     )
     async def ping_command(self, ctx):
         start = datetime.timestamp(datetime.now())
         # Gets the timestamp when the command was used
 
-        msg = await ctx.send(content='Pinging')
+        msg = await ctx.send(content="Pong!")
         # Sends a message to the user in the channel the message with the command was received.
         # Notifies the user that pinging has started
 
-        await msg.edit(content=f'Pong!\nOne message round-trip took {( datetime.timestamp( datetime.now() ) - start ) * 1000 }ms.')
+        await msg.edit(content=f"Pong! `{round((datetime.timestamp(datetime.now()) - start) * 1000)}ms.`")
         # Ping completed and round-trip duration show in ms
         # Since it takes a while to send the messages
         # it will calculate how much time it takes to edit an message.

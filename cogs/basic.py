@@ -2,6 +2,9 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 
+# Bot version
+version = "0.1.0"
+
 # These color constants are taken from discord.js library
 colors = {
   'DEFAULT': 0x000000,
@@ -49,12 +52,13 @@ class Basic(commands.Cog):
         # The third parameter comes into play when only one word argument has to be passed by the user
         # Prepare the embed
         help_embed = discord.Embed(
-            title = 'Commands',
+            title = 'Help',
             color = colors['DARK_VIVID_PINK']
         )
 
         # Get a list of all cogs
         cogs = [c for c in self.bot.cogs.keys()]
+        help_embed.description = f"*Bot version: {version}*\n"
 
         # If cog is not specified by the user, we list all cogs and commands
         if command == 'all':
@@ -78,13 +82,13 @@ class Basic(commands.Cog):
                 cog_commands = self.bot.get_cog(cog).get_commands()
                 for comm in cog_commands:
                     if command == comm.name:
-                        help_text = f"**{comm.name}**\n\n"
+                        help_text = f"**Command:** {comm.name}\n\n"
                         help_text += comm.description
 
                         if len(comm.aliases) > 0:
-                            help_text += f"\n\n**Aliases :** `{'`, `'.join(comm.aliases)}`"
+                            help_text += f"\n\n**Aliases:** `{'`, `'.join(comm.aliases)}`"
 
-                        help_embed.description = help_text
+                        help_embed.description += f"\n{help_text}"
                         await ctx.send(embed = help_embed)
                         return
 

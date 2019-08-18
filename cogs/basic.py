@@ -90,7 +90,6 @@ class Basic(commands.Cog):
 
         # Notify the user of invalid command and finish the command
         await ctx.send('Invalid command specified.\nUse `help` command to list all command.')
-        return
 
     @commands.command(
         name = 'ping',
@@ -110,7 +109,6 @@ class Basic(commands.Cog):
         # Since it takes a while to send the messages
         # it will calculate how much time it takes to edit an message.
         # It depends usually on your internet connection speed
-        return
 
 
 def setup(bot):

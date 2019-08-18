@@ -16,34 +16,16 @@ bot = commands.Bot(
     case_insensitive = True
 )
 
-cogs = ['cogs.basic']
+cogs = ['cogs.basic', 'cogs.embed']
 
 @bot.event
 async def on_ready():
     print(f"{info} Weeblord has risen!")
     print(f"{info} {datetime.now()}")
+    # Remove the help command before loading the cogs
+    bot.remove_command('help')
     for cog in cogs:
         bot.load_extension(cog)
     return
-
-# @bot.command()
-# async def help(ctx):
-#     await ctx.send("No I don't care about you.")
-
-# @bot.command()
-# async def add(ctx, a: int, b: int):
-#     await ctx.send(a+b)
-
-# @bot.command()
-# async def multiply(ctx, a: int, b: int):
-#     await ctx.send(a*b)
-
-# @bot.command()
-# async def greet(ctx):
-#     await ctx.send(":smiley: :wave: Hello, there!")
-
-# @bot.command()
-# async def cat(ctx):
-#     await ctx.send("https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif")
 
 bot.run(token, bot = True, reconnect = True)

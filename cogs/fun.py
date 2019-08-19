@@ -47,6 +47,7 @@ class Fun(commands.Cog):
             
             option_aliases = ['r', 'p', 's']
             options = ['rock', 'paper', 'scissors']
+            option_emoji = [':new_moon:', ':newspaper:', ':scissors:'] # For discord emoji
             if choice.lower() not in option_aliases and choice.lower() not in options:
                 await ctx.send(content = f"Wrong command bro, what the heck is {ctx.message.author}?")
                 return
@@ -56,8 +57,8 @@ class Fun(commands.Cog):
                 player = (ctx.message.author.name, choice.lower())
             
             cpu = (self.bot.user.name, options[random.randrange(len(options))])
-            await ctx.send(content = f"{ctx.message.author.name} used {player[1]}")
-            await ctx.send(content = f"{self.bot.user.name} used {cpu[1]}")
+            await ctx.send(content = f"{ctx.message.author.name} used {option_emoji[options.index(player[1])]}")
+            await ctx.send(content = f"{self.bot.user.name} used {option_emoji[options.index(cpu[1])]}")
             
             if rps_sesh(player, cpu) == 'draw':
                 await ctx.send(content = "Draw!")

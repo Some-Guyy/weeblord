@@ -3,7 +3,7 @@ from discord.ext import commands
 from datetime import datetime
 
 # Bot version
-version = "0.1.2"
+version = "0.2.0"
 
 # These color constants are taken from discord.js library
 colors = {
@@ -53,7 +53,7 @@ class Basic(commands.Cog):
         # Prepare the embed
         help_embed = discord.Embed(
             title = 'Help',
-            color = colors['DARK_VIVID_PINK']
+            color = colors['PURPLE']
         )
 
         # Get a list of all cogs

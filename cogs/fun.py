@@ -65,6 +65,53 @@ class Fun(commands.Cog):
             else:
                 await ctx.send(content = f"{rps_sesh(player, cpu)} wins!")
 
+    @commands.command(
+        name = 'uwu-ify',
+        description = "Uwu-ify the previous message ( ✧≖ ͜ʖ≖)",
+        aliases = ['uwu']
+    )
+    async def uwu_command(self, ctx):
+        def uwu(string):
+            string = string.replace('l', 'w')
+            string = string.replace('L', 'W')
+            string = string.replace('r', 'w')
+            string = string.replace('R', 'W')
+            string = string.replace('thr', 'fw')
+            string = string.replace('Thr', 'Fw')
+            string = string.replace('THr', 'Fw')
+            string = string.replace('THR', 'FW')
+            string = string.replace('tHR', 'fW')
+            string = string.replace('thR', 'fW')
+            string = string.replace('thi', 'fw')
+            string = string.replace('Thi', 'Fw')
+            string = string.replace('THi', 'Fw')
+            string = string.replace('THI', 'FW')
+            string = string.replace('tHI', 'fW')
+            string = string.replace('thI', 'fW')
+            string = string.replace('th', 'd')
+            string = string.replace('Th', 'D')
+            string = string.replace('tH', 'D')
+            string = string.replace('TH', 'D')
+            string = string.replace('ou', 'uw')
+            string = string.replace('Ou', 'Uw')
+            string = string.replace('oU', 'uW')
+            string = string.replace('OU', 'UW')
+            return string
+
+        messages = await ctx.channel.history(limit = 2).flatten()
+        message = messages[1]
+        text = message.content
+
+        uwu_embed = discord.Embed(
+            description = uwu(text),
+            color = 0xE91E63 # LUMINOUS_VIVID_PINK
+        )
+        uwu_embed.set_author(
+            name = message.author.name,
+            icon_url = message.author.avatar_url
+        )
+        await ctx.send(embed = uwu_embed)
+
 
 def setup(bot):
     bot.add_cog(Fun(bot))

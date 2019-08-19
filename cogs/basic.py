@@ -3,7 +3,7 @@ from discord.ext import commands
 from datetime import datetime
 
 # Bot version
-version = "0.2.0"
+version = "0.3.0"
 
 # These color constants are taken from discord.js library
 colors = {
@@ -45,8 +45,8 @@ class Basic(commands.Cog):
     # Define a new command
     @commands.command(
         name = 'help',
-        description = "The help command!",
-        aliases = ['commands', 'command']
+        description = "Ay dood what do you think this command is for?",
+        aliases = ['h', 'commands', 'command']
     )
     async def help_command(self, ctx, command='all'):
         # The third parameter comes into play when only one word argument has to be passed by the user
@@ -113,6 +113,30 @@ class Basic(commands.Cog):
         # Since it takes a while to send the messages
         # it will calculate how much time it takes to edit an message.
         # It depends usually on your internet connection speed
+    
+    @commands.command(
+        name = 'roll',
+        description = "The basic roll command. Every discord bot should have this, right? Choose a number and I'll roll a random number up to your chosen one.",
+        aliases = ['r']
+    )
+    async def roll_command(self, ctx, roll_amount = 'none'):
+        if roll_amount == 'none':
+            await ctx.send(content = f"To use this command, type `{ctx.prefix}roll <number>`\nI'll roll a die of that many sides for you.")
+        else:
+            try:
+                roll_amount = int(roll_amount)
+                roll_text = ""
+                if roll_amount == 0:
+                    roll_text += "_ _"
+                elif roll_amount < 0:
+                    for i in range(abs(roll_amount)):
+                        roll_text += "llor"
+                else:
+                    for i in range(roll_amount):
+                        roll_text += "roll"
+                await ctx.send(content = roll_text)
+            except ValueError:
+                await ctx.send(content = f"Use whole numbers only dude, I don't have a magical dice in here!")
 
 
 def setup(bot):

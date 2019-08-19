@@ -57,17 +57,29 @@ class Fun(commands.Cog):
                 player = (ctx.message.author.name, choice.lower())
             
             cpu = (self.bot.user.name, options[random.randrange(len(options))])
-            await ctx.send(content = f"{ctx.message.author.name} used {option_emoji[options.index(player[1])]}")
-            await ctx.send(content = f"{self.bot.user.name} used {option_emoji[options.index(cpu[1])]}")
             
+            rps_embed = discord.Embed(
+                title = 'Rock, Paper, Scissors!',
+                description = f"{ctx.message.author.name} used {option_emoji[options.index(player[1])]}!\n{self.bot.user.name} used {option_emoji[options.index(cpu[1])]}!\n\n"
+            )
+
             if rps_sesh(player, cpu) == 'draw':
-                await ctx.send(content = "Draw!")
+                rps_embed.description += "It's a Draw!"
+                rps_embed.color = 0xF1C40F # GOLD
+            elif rps_sesh(player, cpu) == self.bot.user.name:
+                rps_embed.description += f"{rps_sesh(player, cpu)} wins! :tada:"
+                rps_embed.color = 0xE74C3C # RED
+                rps_embed.set_thumbnail(url = self.bot.user.avatar_url)
             else:
-                await ctx.send(content = f"{rps_sesh(player, cpu)} wins!")
+                rps_embed.description += f"{rps_sesh(player, cpu)} wins! :tada:"
+                rps_embed.color = 0x2ECC71 # GREEN
+                rps_embed.set_thumbnail(url = ctx.message.author.avatar_url)
+
+            await ctx.send(embed = rps_embed)
 
     @commands.command(
         name = 'uwu-ify',
-        description = "Uwu-ify the previous message ( ✧≖ ͜ʖ≖)",
+        description = "Uwu-ify the previous message UwU",
         aliases = ['uwu']
     )
     async def uwu_command(self, ctx):

@@ -3,7 +3,7 @@ from discord.ext import commands
 from datetime import datetime
 
 # Bot version
-version = "0.3.0"
+version = "0.3.1"
 
 # These color constants are taken from discord.js library
 colors = {

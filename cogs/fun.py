@@ -102,6 +102,7 @@ class Fun(commands.Cog):
             string = string.replace('Ou', 'Uw')
             string = string.replace('oU', 'uW')
             string = string.replace('OU', 'UW')
+            string += " UwU"
             return string
 
         messages = await ctx.channel.history(limit = 2).flatten()

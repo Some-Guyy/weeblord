@@ -120,11 +120,10 @@ class Fun(commands.Cog):
             await ctx.send(embed = rps_embed)
 
     @commands.command(
-        name = 'charge(incomplete)',
+        name = 'charge',
         description = '''A battle of wits and resources until one loses!
 The main feature of this game is mana. Moves you can perform will have different mana costs.
-Type `$charge moves` for movelist''',
-        aliases = ['charge']
+Type `$charge moves` for movelist'''
     )
     async def charge_command(self, ctx, info = 'none'):
         class Player:

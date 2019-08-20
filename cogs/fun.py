@@ -262,7 +262,7 @@ Type `$charge moves` for movelist'''
             # As well as by the user who used the command.
             return ms.channel == ctx.message.channel and ms.author == ctx.message.author
         
-        if info == 'moves':
+        if info.lower() == 'moves':
             await ctx.send(content = '''`+--------+------+-----------------------------------------------------------------+
 | Move   | Cost | Description                                                     |
 +--------+------+-----------------------------------------------------------------+
@@ -317,7 +317,7 @@ Type `$charge moves` for movelist'''
 
                 # Player move
                 msg = await self.bot.wait_for('message', check = check)
-                player_move = msg.content
+                player_move = msg.content.lower()
                 if player_move == 'moves':
                     await ctx.send(content = '''`+--------+------+-----------------------------------------------------------------+
 | Move   | Cost | Description                                                     |

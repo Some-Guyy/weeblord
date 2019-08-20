@@ -125,6 +125,7 @@ class Fun(commands.Cog):
 The main feature of this game is mana. Moves you can perform will have different mana costs.
 Type `$charge moves` for movelist'''
     )
+    @commands.cooldown(1, 86400, commands.BucketType.channel)
     async def charge_command(self, ctx, info = 'none'):
         class Player:
             def __init__(self, name):
@@ -433,6 +434,13 @@ Type `$charge moves` for movelist'''
                 await ctx.send(embed = charge_embed)
             else:
                 await ctx.send(content = "[ERROR] Both players are still alive.")
+            
+            ctx.command.reset_cooldown(ctx)
+    
+    @charge_command.error
+    async def charge_command_handler(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send(content = f"A game of Charge is already running on this channel!")
 
 
 def setup(bot):

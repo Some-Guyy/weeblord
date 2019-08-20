@@ -317,8 +317,27 @@ Type `$charge moves` for movelist'''
                 # Player move
                 msg = await self.bot.wait_for('message', check = check)
                 player_move = msg.content
-                if player_move not in move_dict:
-                    await ctx.send(embed = discord.Embed(title = 'Charge!', description = f"What kind of move is {player_move}?!", color = 0x3498DB))
+                if player_move == 'moves':
+                    await ctx.send(content = '''```+--------+------+-----------------------------------------------------------------+
+| Move   | Cost | Description                                                     |
++--------+------+-----------------------------------------------------------------+
+| Charge | None | Increases your mana by 1. Vulnerable to ANY attack.             |
++--------+------+-----------------------------------------------------------------+
+| Block  | None | Blocks “Bom” and “Slash”. Vulnerable to any OTHER attack.       |
++--------+------+-----------------------------------------------------------------+
+| Jump   | None | Jumps above “Bom” and “Boom”. Vulnerable to any OTHER attack.   |
++--------+------+-----------------------------------------------------------------+
+| Bom    | 1    | Shoots a small energy ball, loses to any other stronger attack. |
++--------+------+-----------------------------------------------------------------+
+| Boom   | 2    | Shoots a huge energy ball, loses to “Smash”                     |
++--------+------+-----------------------------------------------------------------+
+| Slash  | 2    | Slashes wildly, loses to “Smash”                                |
++--------+------+-----------------------------------------------------------------+
+| Smash  | 4    | Smashes the opponent with enormous power.                       |
++--------+------+-----------------------------------------------------------------+```''')
+                    continue
+                elif player_move not in move_dict:
+                    await ctx.send(embed = discord.Embed(title = 'Charge!', description = f"What kind of move is {player_move}?!\nType `moves` to see the movelist.", color = 0x3498DB))
                     continue
                 elif player.mana - move_dict[player_move]['cost'] < 0:
                     await ctx.send(embed = discord.Embed(title = 'Charge!', description = "Not enough mana!", color = 0x3498DB))

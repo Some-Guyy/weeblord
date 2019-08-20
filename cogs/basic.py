@@ -1,9 +1,10 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
+import asyncio
 
 # Bot version
-version = "0.4.1"
+version = "0.4.2"
 
 # These color constants are taken from discord.js library
 colors = {
@@ -120,11 +121,17 @@ class Basic(commands.Cog):
         aliases = ['r']
     )
     async def roll_command(self, ctx, roll_amount = 'none'):
+        await ctx.channel.trigger_typing()
         if roll_amount == 'none':
             await ctx.send(content = f"To use this command, type `{ctx.prefix}roll <number>`\nI'll roll a die of that many sides for you.")
         else:
             try:
                 roll_amount = int(roll_amount)
+                if roll_amount > 500:
+                    await asyncio.sleep(3)
+                    await ctx.send(content = "Oops, I ran out of dice to roll...")
+                    return
+
                 roll_text = ""
                 if roll_amount == 0:
                     roll_text += "_ _"
@@ -134,9 +141,11 @@ class Basic(commands.Cog):
                 else:
                     for i in range(roll_amount):
                         roll_text += "roll"
+
                 await ctx.send(content = roll_text)
+
             except ValueError:
-                await ctx.send(content = f"Use whole numbers only dude, I don't have a magical dice in here!")
+                await ctx.send(content = "Use whole numbers only dude, I don't have a magical dice in here!")
 
 
 def setup(bot):

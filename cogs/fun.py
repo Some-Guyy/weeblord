@@ -262,7 +262,7 @@ Type `$charge moves` for movelist'''
             return ms.channel == ctx.message.channel and ms.author == ctx.message.author
         
         if info == 'moves':
-            await ctx.send(content = '''```+--------+------+-----------------------------------------------------------------+
+            await ctx.send(content = '''`+--------+------+-----------------------------------------------------------------+
 | Move   | Cost | Description                                                     |
 +--------+------+-----------------------------------------------------------------+
 | Charge | None | Increases your mana by 1. Vulnerable to ANY attack.             |
@@ -278,7 +278,7 @@ Type `$charge moves` for movelist'''
 | Slash  | 2    | Slashes wildly, loses to “Smash”                                |
 +--------+------+-----------------------------------------------------------------+
 | Smash  | 4    | Smashes the opponent with enormous power.                       |
-+--------+------+-----------------------------------------------------------------+```''')
++--------+------+-----------------------------------------------------------------+`''')
             return
         elif info != 'none':
             await ctx.send(content = f"Type `{ctx.prefix}charge` to challenge me to a game of Charge! Or `{ctx.prefix}charge moves` to view the movelist.")

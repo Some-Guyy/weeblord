@@ -193,7 +193,7 @@ Type `$charge moves` for movelist'''
                 ]
             }
             if situation in lines:
-                return discord.Embed(title = 'Charge!', description = random.choice(lines[situation]), color = 0x3498DB)
+                return random.choice(lines[situation])
             else:
                 print(f"[ERROR] No such situation called {situation}!")
         
@@ -298,6 +298,7 @@ Type `$charge moves` for movelist'''
                 'smash': {'cost': 4, 'defeat': ['charge', 'block', 'jump', 'bom', 'boom', 'slash']}
             }
             
+            # Initialise embed
             charge_embed = discord.Embed(
                 title = 'Charge',
                 description = f"{player.name} challenged {cpu.name} to a game of Charge!\n{player.name} charged!\n{cpu.name} charged!\n\nNext move?",
@@ -361,45 +362,73 @@ Type `$charge moves` for movelist'''
                 # Fight commence!
                 # Both charge
                 if player.status == cpu.status == 'restore':
-                    await ctx.send(embed = announce('both_restore', player, cpu))
+                    charge_embed = discord.Embed(
+                        title = 'Charge!',
+                        description = announce('both_restore', player, cpu),
+                        color = 0x3498DB
+                    )
                 # Both defend
                 elif player.status == cpu.status == 'defence':
-                    await ctx.send(embed = both_defend(player, cpu))
+                    charge_embed = discord.Embed(
+                        title = 'Charge!',
+                        description = both_defend(player, cpu),
+                        color = 0x3498DB
+                    )
                 # Both same attack power
                 elif player.status == cpu.status == 'attack' and player.power == cpu.power:
                     if player.move != cpu.move:
-                        await ctx.send(embed = announce('diff_attack', player, cpu))
+                        charge_embed = discord.Embed(
+                            title = 'Charge!',
+                            description = announce('diff_attack', player, cpu),
+                            color = 0x3498DB
+                        )
                     else:
-                        await ctx.send(embed = announce('same_attack', player, cpu))
+                        charge_embed = discord.Embed(
+                            title = 'Charge!',
+                            description = announce('same_attack', player, cpu),
+                            color = 0x3498DB
+                        )
                 
                 # Defend and charge
                 elif player.status == 'restore' and cpu.status == 'defence' or cpu.status == 'restore' and player.status == 'defence':
-                    await ctx.send(embed = charge_defend(player, cpu))
+                    charge_embed = discord.Embed(
+                        title = 'Charge!',
+                        description = charge_defend(player, cpu),
+                        color = 0x3498DB
+                    )
                 
                 # Defend and attack
                 elif player.status == 'defence' and cpu.status == 'attack' or player.status == 'attack' and cpu.status == 'defence':
-                    await ctx.send(embed = defend_attack(player, cpu))
+                    charge_embed = discord.Embed(
+                        title = 'Charge!',
+                        description = defend_attack(player, cpu),
+                        color = 0x3498DB
+                    )
                     
                 # Overpowering attacks
                 else:
-                    await ctx.send(embed = attack_overpower(player, cpu))
+                    charge_embed = discord.Embed(
+                        title = 'Charge!',
+                        description = attack_overpower(player, cpu),
+                        color = 0x3498DB
+                    )
             
             if player.status == cpu.status == 'dead':
                 print("[ERROR] Something wrong occurred during the fight. Both dead.")
             elif player.status == 'dead':
-                charge_embed = discord.Embed(
-                    title = 'Charge!',
-                    description = f"{cpu.name} WINS! :tada:",
-                    color = 0xE74C3C # RED
+                charge_embed.add_field(
+                    name = '\u200b',
+                    value = f"{cpu.name} WINS! :tada:"
                 )
+                charge_embed.color = 0xE74C3C # RED0x2ECC71 # GREEN
                 charge_embed.set_thumbnail(url = self.bot.user.avatar_url)
                 await ctx.send(embed = charge_embed)
             elif cpu.status == 'dead':
-                charge_embed = discord.Embed(
-                    title = 'Charge!',
-                    description = f"{player.name} WINS! :tada:",
-                    color = 0x2ECC71 # GREEN
+                charge_embed.add_field(
+                    name = '\u200b',
+                    value = f"{cpu.name} WINS! :tada:"
                 )
+                charge_embed.color = 0x2ECC71 # GREEN
                 charge_embed.set_thumbnail(url = ctx.message.author.avatar_url)
                 await ctx.send(embed = charge_embed)
             else:

@@ -195,7 +195,7 @@ Type `$charge moves` for movelist'''
             if situation in lines:
                 return random.choice(lines[situation])
             else:
-                print(f"[ERROR] No such situation called {situation}!")
+                await ctx.send(content = f"[ERROR] No such situation called {situation}!")
         
         def both_defend(player1, player2):
             if player1.move == player2.move:
@@ -211,7 +211,7 @@ Type `$charge moves` for movelist'''
                 charger = player2
                 defender = player1
             else:
-                print("[ERROR] Code should not reach here!")
+                await ctx.send(content = "[ERROR] Code should not reach here!")
                 player1.die()
                 player2.die()
             return announce('restore_defend', charger, defender)
@@ -236,7 +236,7 @@ Type `$charge moves` for movelist'''
             elif attacker.power < defender.power:
                 return announce('defend_overpower', defender, attacker)
             else:
-                print("[ERROR] Code should not reach here!")
+                await ctx.send(content = "[ERROR] Code should not reach here!")
                 player1.die()
                 player2.die()
                 
@@ -248,7 +248,7 @@ Type `$charge moves` for movelist'''
                 winner = player2
                 loser = player1
             else:
-                print("[ERROR] Code should not reach here!")
+                await ctx.send(content = "[ERROR] Code should not reach here!")
                 player1.die()
                 player2.die()
                 return
@@ -414,7 +414,7 @@ Type `$charge moves` for movelist'''
                     )
             
             if player.status == cpu.status == 'dead':
-                print("[ERROR] Something wrong occurred during the fight. Both dead.")
+                await ctx.send(content = "[ERROR] Something wrong occurred during the fight. Both dead.")
             elif player.status == 'dead':
                 charge_embed.add_field(
                     name = '\u200b',
@@ -432,7 +432,7 @@ Type `$charge moves` for movelist'''
                 charge_embed.set_thumbnail(url = ctx.message.author.avatar_url)
                 await ctx.send(embed = charge_embed)
             else:
-                print("[ERROR] Both players are still alive.")
+                await ctx.send(content = "[ERROR] Both players are still alive.")
 
 
 def setup(bot):

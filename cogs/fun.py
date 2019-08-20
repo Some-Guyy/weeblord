@@ -195,7 +195,7 @@ Type `$charge moves` for movelist'''
             if situation in lines:
                 return random.choice(lines[situation])
             else:
-                await ctx.send(content = f"[ERROR] No such situation called {situation}!")
+                return f"[ERROR] No such situation called {situation}!"
         
         def both_defend(player1, player2):
             if player1.move == player2.move:
@@ -211,9 +211,10 @@ Type `$charge moves` for movelist'''
                 charger = player2
                 defender = player1
             else:
-                await ctx.send(content = "[ERROR] Code should not reach here!")
                 player1.die()
                 player2.die()
+                return "[ERROR] Code should not reach here!"
+
             return announce('restore_defend', charger, defender)
         
         def defend_attack(player1, player2):
@@ -236,9 +237,9 @@ Type `$charge moves` for movelist'''
             elif attacker.power < defender.power:
                 return announce('defend_overpower', defender, attacker)
             else:
-                await ctx.send(content = "[ERROR] Code should not reach here!")
                 player1.die()
                 player2.die()
+                return "[ERROR] Code should not reach here!"
                 
         def attack_overpower(player1, player2):
             if player1.power > player2.power:
@@ -248,10 +249,9 @@ Type `$charge moves` for movelist'''
                 winner = player2
                 loser = player1
             else:
-                await ctx.send(content = "[ERROR] Code should not reach here!")
                 player1.die()
                 player2.die()
-                return
+                return "[ERROR] Code should not reach here!"
             loser.die()
             return announce('attack_overpower', winner, loser)
 

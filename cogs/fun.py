@@ -307,10 +307,10 @@ Type `$charge moves` for movelist'''
             
             # Game until one player loses
             while player.status != 'dead' and cpu.status != 'dead':
-                charge_embed = discord.Embed(
-                    title = 'Charge!',
-                    description = f"+-------------------------------+\n{player.name}'s mana: {player.mana}\n+-------------------------------+\n{cpu.name}'s mana: {cpu.mana}\n+-------------------------------+\n\nNext move?",
-                    color = 0x3498DB # BLUE
+                charge_embed.add_field(
+                    name = '\u200b',
+                    value = f"+-------------------------------+\n{player.name}'s mana: {player.mana}\n+-------------------------------+\n{cpu.name}'s mana: {cpu.mana}\n+-------------------------------+\n\nNext move?",
+                    inline = False
                 )
                 await ctx.send(embed = charge_embed)
 
@@ -337,10 +337,18 @@ Type `$charge moves` for movelist'''
 +--------+------+-----------------------------------------------------------------+```''')
                     continue
                 elif player_move not in move_dict:
-                    await ctx.send(embed = discord.Embed(title = 'Charge!', description = f"What kind of move is {player_move}?!\nType `moves` to see the movelist.", color = 0x3498DB))
+                    charge_embed = discord.Embed(
+                        title = 'Charge!',
+                        description = f"What kind of move is {player_move}?!\nType `moves` to see the movelist.",
+                        color = 0x3498DB
+                    )
                     continue
                 elif player.mana - move_dict[player_move]['cost'] < 0:
-                    await ctx.send(embed = discord.Embed(title = 'Charge!', description = "Not enough mana!", color = 0x3498DB))
+                    charge_embed = discord.Embed(
+                        title = 'Charge!',
+                        description = "Not enough mana!",
+                        color = 0x3498DB
+                    )
                     continue
                 else:
                     player.use_move(player_move, move_dict[player_move]['cost'])

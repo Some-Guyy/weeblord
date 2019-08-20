@@ -303,7 +303,6 @@ Type `$charge moves` for movelist'''
                 description = f"{player.name} challenged {cpu.name} to a game of Charge!\n{player.name} charged!\n{cpu.name} charged!\n\nNext move?",
                 color = 0x3498DB # BLUE
             )
-            await ctx.send(embed = charge_embed)
             
             # Game until one player loses
             while player.status != 'dead' and cpu.status != 'dead':
@@ -318,7 +317,7 @@ Type `$charge moves` for movelist'''
                 msg = await self.bot.wait_for('message', check = check)
                 player_move = msg.content
                 if player_move == 'moves':
-                    await ctx.send(content = '''```+--------+------+-----------------------------------------------------------------+
+                    await ctx.send(content = '''`+--------+------+-----------------------------------------------------------------+
 | Move   | Cost | Description                                                     |
 +--------+------+-----------------------------------------------------------------+
 | Charge | None | Increases your mana by 1. Vulnerable to ANY attack.             |
@@ -334,7 +333,7 @@ Type `$charge moves` for movelist'''
 | Slash  | 2    | Slashes wildly, loses to “Smash”                                |
 +--------+------+-----------------------------------------------------------------+
 | Smash  | 4    | Smashes the opponent with enormous power.                       |
-+--------+------+-----------------------------------------------------------------+```''')
++--------+------+-----------------------------------------------------------------+`''')
                     continue
                 elif player_move not in move_dict:
                     charge_embed = discord.Embed(

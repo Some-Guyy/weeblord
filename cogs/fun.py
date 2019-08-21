@@ -292,7 +292,10 @@ Type `$charge moves` for movelist'''
                 value = f"+-------------------------------+\n{player.name}'s :yin_yang:Mana: {player.mana}\n+-------------------------------+\n{cpu.name}'s :yin_yang:Mana: {cpu.mana}\n+-------------------------------+\n\nNext move?",
                 inline = False
             )
-            await ctx.send(embed = charge_embed)
+            # Delete previous message
+            if 'turn_message' in locals():
+                await turn_message.delete()
+            turn_message = await ctx.send(embed = charge_embed)
 
             # Player move
             msg = await self.bot.wait_for('message', check = check)
@@ -403,7 +406,9 @@ Type `$charge moves` for movelist'''
                     value = attack_overpower(player, cpu),
                     inline = False
                 )
-        
+        # Delete previous message
+        await turn_message.delete()
+
         if player.status == cpu.status == 'dead':
             await ctx.send(content = "[ERROR] Something wrong occurred during the fight. Both dead.")
         elif player.status == 'dead':

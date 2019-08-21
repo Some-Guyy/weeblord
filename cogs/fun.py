@@ -127,8 +127,7 @@ class Fun(commands.Cog):
     @commands.command(
         name = 'charge',
         description = '''A battle of wits and resources until one loses!
-The main feature of this game is mana. Moves you can perform will have different mana costs.
-Type `$charge moves` for movelist'''
+The main feature of this game is mana. Moves you can perform will have different mana costs.'''
     )
     @commands.cooldown(1, 86400, commands.BucketType.channel)
     async def charge_command(self, ctx):

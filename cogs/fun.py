@@ -307,6 +307,9 @@ Type `$charge moves` for movelist'''
                 await turn_message.delete()
             turn_message = await ctx.send(embed = charge_embed)
 
+            # CPU move
+            cpu_move = cpu_ai(player, cpu, move_dict)
+
             # Player move
             msg = await self.bot.wait_for('message', check = check)
             player_move = msg.content.lower()
@@ -350,10 +353,7 @@ Type `$charge moves` for movelist'''
                 continue
             else:
                 player.use_move(player_move, move_dict[player_move]['cost'])
-                
-            # CPU move
-            cpu_move = cpu_ai(player, cpu, move_dict)
-            cpu.use_move(cpu_move, move_dict[cpu_move]['cost'])
+                cpu.use_move(cpu_move, move_dict[cpu_move]['cost'])
 
             charge_embed = discord.Embed(
                 title = 'Charge!',

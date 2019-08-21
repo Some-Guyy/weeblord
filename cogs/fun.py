@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
-
+from datetime import datetime
 import random
+import asyncio
 
 class Fun(commands.Cog):
     def __init__(self, bot):
@@ -225,6 +226,7 @@ Type `$charge moves` for movelist'''
             if situation in lines:
                 return random.choice(lines[situation])
             else:
+                print(f"[ERROR] No such situation called {situation}!")
                 return f"[ERROR] No such situation called {situation}!"
         
         def both_defend(player1, player2):
@@ -243,6 +245,7 @@ Type `$charge moves` for movelist'''
             else:
                 player1.die()
                 player2.die()
+                print("[ERROR] Code should not reach here!")
                 return "[ERROR] Code should not reach here!"
 
             return announce('restore_defend', charger, defender)
@@ -269,6 +272,7 @@ Type `$charge moves` for movelist'''
             else:
                 player1.die()
                 player2.die()
+                print("[ERROR] Code should not reach here!")
                 return "[ERROR] Code should not reach here!"
                 
         def attack_overpower(player1, player2):
@@ -281,15 +285,16 @@ Type `$charge moves` for movelist'''
             else:
                 player1.die()
                 player2.die()
+                print("[ERROR] Code should not reach here!")
                 return "[ERROR] Code should not reach here!"
             loser.die()
             return announce('attack_overpower', winner, loser)
 
         # Define a check function that validates the message received by the bot
-        def check(ms):
+        def check(m):
             # Look for the message sent in the same channel where the command was used
             # As well as by the user who used the command.
-            return ms.channel == ctx.message.channel and ms.author == ctx.message.author
+            return m.channel == ctx.message.channel and m.author == ctx.message.author
         
         player = Player(ctx.message.author.name)
         player_avatar = ctx.message.author.avatar_url
@@ -319,7 +324,7 @@ Type `$charge moves` for movelist'''
             cpu_move = cpu_ai(player, cpu, move_dict)
 
             # Player move
-            msg = await self.bot.wait_for('message', check = check)
+            msg = await self.bot.wait_for('message', check = check, timeout = 30)
             await ctx.channel.trigger_typing()
             player_move = msg.content.lower()
             if player_move == 'moves':
@@ -427,6 +432,7 @@ Type `$charge moves` for movelist'''
         await turn_message.delete()
 
         if player.status == cpu.status == 'dead':
+            print("[ERROR] Something wrong occurred during the fight. Both dead.")
             await ctx.send(content = "[ERROR] Something wrong occurred during the fight. Both dead.")
         elif player.status == 'dead':
             charge_embed.add_field(
@@ -447,6 +453,7 @@ Type `$charge moves` for movelist'''
             charge_embed.set_thumbnail(url = ctx.message.author.avatar_url)
             await ctx.send(embed = charge_embed)
         else:
+            print("[ERROR] Both players are still alive. Code should not have reached here.")
             await ctx.send(content = "[ERROR] Both players are still alive. Code should not have reached here.")
         
         ctx.command.reset_cooldown(ctx)
@@ -454,7 +461,19 @@ Type `$charge moves` for movelist'''
     @charge_command.error
     async def charge_command_handler(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
+            print(f"[ERROR] {ctx.message.author} tried to run Charge in {ctx.guild} - #{ctx.channel} while an instance is already running.\nTimestamp: {datetime.now()}")
             await ctx.send(content = f"A game of Charge is already running on this channel!")
+        elif isinstance(error, commands.CommandInvokeError):
+            print(f"[ERROR] {ctx.message.author} took to long to respond during Charge in {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}")
+            charge_embed = discord.Embed(
+                title = 'Charge!',
+                description = f"{ctx.message.author.name}, you took too long to respond!\n{self.bot.user.name} WINS! :tada:",
+                inline = False
+            )
+            charge_embed.color = 0xE74C3C # RED
+            charge_embed.set_thumbnail(url = self.bot.user.avatar_url)
+            await ctx.send(embed = charge_embed)
+            ctx.command.reset_cooldown(ctx)
 
 
 def setup(bot):

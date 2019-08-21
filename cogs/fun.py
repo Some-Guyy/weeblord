@@ -461,10 +461,10 @@ Type `$charge moves` for movelist'''
     @charge_command.error
     async def charge_command_handler(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
-            print(f"[ERROR] {ctx.message.author} tried to run Charge in {ctx.guild} - #{ctx.channel} while an instance is already running.\nTimestamp: {datetime.now()}")
+            print(f"[INFO] {ctx.message.author} tried to run Charge in {ctx.guild} - #{ctx.channel} while an instance is already running.\nTimestamp: {datetime.now()}")
             await ctx.send(content = f"A game of Charge is already running on this channel!")
         elif isinstance(error, commands.CommandInvokeError):
-            print(f"[ERROR] {ctx.message.author} took to long to respond during Charge in {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}")
+            print(f"[INFO] {ctx.message.author} took to long to respond during Charge in {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}")
             charge_embed = discord.Embed(
                 title = 'Charge!',
                 description = f"{ctx.message.author.name}, you took too long to respond!\n{self.bot.user.name} WINS! :tada:",

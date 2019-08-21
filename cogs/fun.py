@@ -163,9 +163,12 @@ Type `$charge moves` for movelist'''
                 while cpu.mana - move_dict[move]['cost'] < 0 or move_dict[move]['status'] == 'defence':
                     move = random.choice(list(move_dict))
             else:
-                move = random.choice(list(move_dict))
-                while cpu.mana - move_dict[move]['cost'] < 0:
+                if random.randrange(100) < 30:
+                    move = 'charge'
+                else:
                     move = random.choice(list(move_dict))
+                    while cpu.mana - move_dict[move]['cost'] < 0:
+                        move = random.choice(list(move_dict))
 
             return move
             
@@ -425,7 +428,7 @@ Type `$charge moves` for movelist'''
                 value = f"{cpu.name} WINS! :tada:",
                 inline = False
             )
-            charge_embed.color = 0xE74C3C # RED0x2ECC71 # GREEN
+            charge_embed.color = 0xE74C3C # RED
             charge_embed.set_thumbnail(url = self.bot.user.avatar_url)
             await ctx.send(embed = charge_embed)
         elif cpu.status == 'dead':

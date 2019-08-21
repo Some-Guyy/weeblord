@@ -143,6 +143,9 @@ Type `$charge moves` for movelist'''
                 'fwoosh': {'cost': 4, 'status': 'attack', 'stylized': ':wind_blowing_face:Fwoosh'}
         }
 
+        def print_error(error_message):
+            print(f"[ERROR] {error_message}\nTimestamp: {datetime.now()}")
+
         class Player:
             def __init__(self, name):
                 self.name = name
@@ -226,7 +229,7 @@ Type `$charge moves` for movelist'''
             if situation in lines:
                 return random.choice(lines[situation])
             else:
-                print(f"[ERROR] No such situation called {situation}!")
+                print_error(f"No such situation called {situation}!")
                 return f"[ERROR] No such situation called {situation}!"
         
         def both_defend(player1, player2):
@@ -245,7 +248,7 @@ Type `$charge moves` for movelist'''
             else:
                 player1.die()
                 player2.die()
-                print("[ERROR] Code should not reach here!")
+                print_error("Code should not reach here!")
                 return "[ERROR] Code should not reach here!"
 
             return announce('restore_defend', charger, defender)
@@ -272,7 +275,7 @@ Type `$charge moves` for movelist'''
             else:
                 player1.die()
                 player2.die()
-                print("[ERROR] Code should not reach here!")
+                print_error("Code should not reach here!")
                 return "[ERROR] Code should not reach here!"
                 
         def attack_overpower(player1, player2):
@@ -285,7 +288,7 @@ Type `$charge moves` for movelist'''
             else:
                 player1.die()
                 player2.die()
-                print("[ERROR] Code should not reach here!")
+                print_error("Code should not reach here!")
                 return "[ERROR] Code should not reach here!"
             loser.die()
             return announce('attack_overpower', winner, loser)
@@ -432,7 +435,7 @@ Type `$charge moves` for movelist'''
         await turn_message.delete()
 
         if player.status == cpu.status == 'dead':
-            print("[ERROR] Something wrong occurred during the fight. Both dead.")
+            print_error("Something wrong occurred during the fight. Both dead.")
             await ctx.send(content = "[ERROR] Something wrong occurred during the fight. Both dead.")
         elif player.status == 'dead':
             charge_embed.add_field(
@@ -453,7 +456,7 @@ Type `$charge moves` for movelist'''
             charge_embed.set_thumbnail(url = ctx.message.author.avatar_url)
             await ctx.send(embed = charge_embed)
         else:
-            print("[ERROR] Both players are still alive. Code should not have reached here.")
+            print_error("Both players are still alive. Code should not have reached here.")
             await ctx.send(content = "[ERROR] Both players are still alive. Code should not have reached here.")
         
         ctx.command.reset_cooldown(ctx)

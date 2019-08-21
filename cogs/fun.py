@@ -163,10 +163,10 @@ Type `$charge moves` for movelist'''
             # During non-winner/loser cases they will still be used in place of player1/player2 or charger/defender
             lines = {
                 'both_restore': [
-                    f"Both used {winner.move}! The tension between them continues to rise...",
-                    f"Both used {winner.move}! The tension betweeen them rises...",
-                    f"Both used {winner.move}! The air thickens.",
-                    f"Both used {winner.move}! An aura of power can be felt throughout the air.."
+                    f"The tension between them continues to rise...",
+                    f"The tension betweeen them rises...",
+                    f"The air thickens.",
+                    f"An aura of power can be felt throughout the air.."
                 ],
                 'same_defend': [
                     f"Both of them {winner.move}ed! Nothing else happened.",
@@ -179,7 +179,7 @@ Type `$charge moves` for movelist'''
                     f"{winner.name} {winner.move}ed and {loser.name} {loser.move}ed. Who would make the first move?"
                 ],
                 'same_attack': [
-                    f"Both used {winner.move}! The powers cancelled each other out!",
+                    f"The powers cancelled each other out!",
                     f"Both {winner.move}ed against the other with full power! They both still seem fine though.."
                 ],
                 'diff_attack': [

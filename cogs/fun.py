@@ -290,13 +290,13 @@ Type `$charge moves` for movelist'''
             cpu = Player(self.bot.user.name)
             cpu_avatar = self.bot.user.avatar_url
             move_dict = {
-                'charge': {'cost': -1, 'defeat': 'none'},
-                'block': {'cost': 0, 'defeat': 'none'},
-                'jump': {'cost': 0, 'defeat': 'none'},
-                'bom': {'cost': 1, 'defeat': ['charge']},
-                'boom': {'cost': 2, 'defeat': ['charge', 'block', 'bom']},
-                'slash': {'cost': 2, 'defeat': ['charge', 'jump', 'bom']},
-                'smash': {'cost': 4, 'defeat': ['charge', 'block', 'jump', 'bom', 'boom', 'slash']}
+                'charge': {'cost': -1},
+                'block': {'cost': 0},
+                'jump': {'cost': 0},
+                'bom': {'cost': 1},
+                'boom': {'cost': 2},
+                'slash': {'cost': 2},
+                'smash': {'cost': 4}
             }
             
             # Initialise embed
@@ -336,6 +336,11 @@ Type `$charge moves` for movelist'''
 +--------+------+-----------------------------------------------------------------+
 | Smash  | 4    | Smashes the opponent with enormous power.                       |
 +--------+------+-----------------------------------------------------------------+`''')
+                    charge_embed = discord.Embed(
+                        title = 'Charge!',
+                        description = "Aight here's yer movelist.",
+                        color = 0x3498DB # BLUE
+                    )
                     continue
                 elif player_move not in move_dict:
                     charge_embed = discord.Embed(

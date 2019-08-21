@@ -158,6 +158,12 @@ Type `$charge moves` for movelist'''
             
             def die(self):
                 self.status = 'dead'
+
+        def cpu_ai(cpu_player, move_dict):
+            move = random.choice(list(move_dict))
+            while cpu_player.mana - move_dict[move]['cost'] < 0:
+                move = random.choice(list(move_dict))
+            return move
             
         def announce(situation, winner, loser):
             # During non-winner/loser cases they will still be used in place of player1/player2 or charger/defender
@@ -342,9 +348,7 @@ Type `$charge moves` for movelist'''
                 player.use_move(move_dict[player_move]['stylized'], move_dict[player_move]['cost'])
                 
             # CPU move
-            cpu_move = random.choice(list(move_dict))
-            while cpu.mana - move_dict[cpu_move]['cost'] < 0:
-                cpu_move = random.choice(list(move_dict))
+            cpu_move = cpu_ai(cpu, move_dict)
             cpu.use_move(move_dict[cpu_move]['stylized'], move_dict[cpu_move]['cost'])
 
             charge_embed = discord.Embed(

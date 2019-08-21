@@ -128,13 +128,13 @@ Type `$charge moves` for movelist'''
     @commands.cooldown(1, 86400, commands.BucketType.channel)
     async def charge_command(self, ctx):
         move_dict = {
-                'charge': {'cost': -1, 'stylized': ':zap:Charge'},
-                'block': {'cost': 0, 'stylized': ':shield:Block'},
-                'jump': {'cost': 0, 'stylized': ':runner:Jump'},
-                'bom': {'cost': 1, 'stylized': ':comet:Bom'},
-                'boom': {'cost': 2, 'stylized': ':boom:Boom'},
-                'slash': {'cost': 2, 'stylized': ':crossed_swords:Slash'},
-                'fwoosh': {'cost': 4, 'stylized': ':wind_blowing_face:Fwoosh'}
+                'charge': {'cost': -1, 'status': 'restore', 'stylized': ':zap:Charge'},
+                'block': {'cost': 0, 'status': 'defence', 'stylized': ':shield:Block'},
+                'jump': {'cost': 0, 'status': 'defence', 'stylized': ':runner:Jump'},
+                'bom': {'cost': 1, 'status': 'attack', 'stylized': ':comet:Bom'},
+                'boom': {'cost': 2, 'status': 'attack', 'stylized': ':boom:Boom'},
+                'slash': {'cost': 2, 'status': 'attack', 'stylized': ':crossed_swords:Slash'},
+                'fwoosh': {'cost': 4, 'status': 'attack', 'stylized': ':wind_blowing_face:Fwoosh'}
         }
 
         class Player:
@@ -145,24 +145,28 @@ Type `$charge moves` for movelist'''
                 self.move = ':zap:Charge'
             
             def use_move(self, move_name, cost):
-                self.move = move_name
+                self.move = move_dict[move_name]['stylized']
                 self.mana -= cost
                 self.power = cost
-                if self.move == move_dict['charge']['stylized']:
-                    self.status = 'restore'
-                elif cost == 0:
-                    self.status = 'defence'
+                self.status = move_dict[move_name]['status']
+                if self.status == 'defence':
                     self.power = 2
-                else:
-                    self.status = 'attack'
             
             def die(self):
                 self.status = 'dead'
 
-        def cpu_ai(cpu_player, move_dict):
-            move = random.choice(list(move_dict))
-            while cpu_player.mana - move_dict[move]['cost'] < 0:
+        def cpu_ai(player, cpu, move_dict):
+            if cpu.mana == 4:
+                move = 'fwoosh'
+            elif player.mana == 0:
                 move = random.choice(list(move_dict))
+                while cpu.mana - move_dict[move]['cost'] < 0 or move_dict[move]['cost'] == 0:
+                    move = random.choice(list(move_dict))
+            else:
+                move = random.choice(list(move_dict))
+                while cpu.mana - move_dict[move]['cost'] < 0:
+                    move = random.choice(list(move_dict))
+
             return move
             
         def announce(situation, winner, loser):
@@ -345,11 +349,11 @@ Type `$charge moves` for movelist'''
                 )
                 continue
             else:
-                player.use_move(move_dict[player_move]['stylized'], move_dict[player_move]['cost'])
+                player.use_move(player_move, move_dict[player_move]['cost'])
                 
             # CPU move
-            cpu_move = cpu_ai(cpu, move_dict)
-            cpu.use_move(move_dict[cpu_move]['stylized'], move_dict[cpu_move]['cost'])
+            cpu_move = cpu_ai(player, cpu, move_dict)
+            cpu.use_move(cpu_move, move_dict[cpu_move]['cost'])
 
             charge_embed = discord.Embed(
                 title = 'Charge!',

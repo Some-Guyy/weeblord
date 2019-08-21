@@ -431,7 +431,7 @@ Type `$charge moves` for movelist'''
         elif cpu.status == 'dead':
             charge_embed.add_field(
                 name = '\u200b',
-                value = f"{cpu.name} WINS! :tada:",
+                value = f"{player.name} WINS! :tada:",
                 inline = False
             )
             charge_embed.color = 0x2ECC71 # GREEN

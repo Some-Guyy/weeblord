@@ -4,7 +4,7 @@ from datetime import datetime
 import asyncio
 
 # Bot version
-version = "0.4.16"
+version = "0.4.17"
 
 # These color constants are taken from discord.js library
 colors = {

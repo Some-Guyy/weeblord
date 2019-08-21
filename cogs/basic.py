@@ -4,7 +4,7 @@ from datetime import datetime
 import asyncio
 
 # Bot version
-version = "0.4.17"
+version = "0.4.18"
 
 # These color constants are taken from discord.js library
 colors = {
@@ -50,6 +50,9 @@ class Basic(commands.Cog):
         aliases = ['h', 'commands', 'command']
     )
     async def help_command(self, ctx, command='all'):
+        # Show that the bot is typing until a message is sent
+        await ctx.channel.trigger_typing()
+
         # The third parameter comes into play when only one word argument has to be passed by the user
         # Prepare the embed
         help_embed = discord.Embed(
@@ -122,6 +125,7 @@ class Basic(commands.Cog):
     )
     async def roll_command(self, ctx, roll_amount = 'none'):
         await ctx.channel.trigger_typing()
+
         if roll_amount == 'none':
             await ctx.send(content = f"To use this command, type `{ctx.prefix}roll <number>`\nI'll roll a die of that many sides for you.")
         else:

@@ -13,6 +13,8 @@ class Fun(commands.Cog):
         aliases = ['uwu']
     )
     async def uwu_command(self, ctx):
+        await ctx.channel.trigger_typing()
+
         def uwu(string):
             string = string.replace('l', 'w')
             string = string.replace('L', 'W')
@@ -54,6 +56,8 @@ class Fun(commands.Cog):
         description = "Rock, Paper, Scissors!"
     )
     async def rps_command(self, ctx, choice = 'none'):
+        await ctx.channel.trigger_typing()
+
         if choice == 'none':
             await ctx.send(content = f"To use this command, type `{ctx.prefix}rps <choice>`\nChoices: `r/rock, p/paper, s/scissors`")
         else:
@@ -127,6 +131,7 @@ Type `$charge moves` for movelist'''
     )
     @commands.cooldown(1, 86400, commands.BucketType.channel)
     async def charge_command(self, ctx):
+        await ctx.channel.trigger_typing()
         move_dict = {
                 'charge': {'cost': -1, 'status': 'restore', 'stylized': ':zap:Charge'},
                 'block': {'cost': 0, 'status': 'defence', 'stylized': ':shield:Block'},
@@ -315,6 +320,7 @@ Type `$charge moves` for movelist'''
 
             # Player move
             msg = await self.bot.wait_for('message', check = check)
+            await ctx.channel.trigger_typing()
             player_move = msg.content.lower()
             if player_move == 'moves':
                 await ctx.send(content = '''`+--------+------+-------------------+

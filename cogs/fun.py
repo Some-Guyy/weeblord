@@ -126,19 +126,29 @@ The main feature of this game is mana. Moves you can perform will have different
 Type `$charge moves` for movelist'''
     )
     @commands.cooldown(1, 86400, commands.BucketType.channel)
-    async def charge_command(self, ctx, info = 'none'):
+    async def charge_command(self, ctx):
+        move_dict = {
+                'charge': {'cost': -1, 'stylized': ':zap:Charge'},
+                'block': {'cost': 0, 'stylized': ':shield:Block'},
+                'jump': {'cost': 0, 'stylized': ':runner:Jump'},
+                'bom': {'cost': 1, 'stylized': ':comet:Bom'},
+                'boom': {'cost': 2, 'stylized': ':boom:Boom'},
+                'slash': {'cost': 2, 'stylized': ':crossed_swords:Slash'},
+                'fwoosh': {'cost': 4, 'stylized': ':wind_blowing_face:Fwoosh'}
+        }
+
         class Player:
             def __init__(self, name):
                 self.name = name
                 self.mana = 1
                 self.status = 'standby'
-                self.move = 'charge'
+                self.move = ':zap:Charge'
             
             def use_move(self, move_name, cost):
                 self.move = move_name
                 self.mana -= cost
                 self.power = cost
-                if self.move == 'charge':
+                if self.move == move_dict['charge']['stylized']:
                     self.status = 'restore'
                 elif cost == 0:
                     self.status = 'defence'
@@ -231,7 +241,7 @@ Type `$charge moves` for movelist'''
                 defender.die()
                 return announce('attack_overpower', attacker, defender)
             elif attacker.power == defender.power:
-                if attacker.move == 'boom' and defender.move == 'jump' or attacker.move == 'slash' and defender.move == 'block':
+                if attacker.move == move_dict['boom']['stylized'] and defender.move == move_dict['jump']['stylized'] or attacker.move == move_dict['slash']['stylized'] and defender.move == move_dict['block']['stylized']:
                     return announce('defend_overpower', defender, attacker)
                 else:
                     defender.die()
@@ -263,193 +273,161 @@ Type `$charge moves` for movelist'''
             # As well as by the user who used the command.
             return ms.channel == ctx.message.channel and ms.author == ctx.message.author
         
-        if info.lower() == 'moves':
-            await ctx.send(content = '''`+--------+------+-----------------------------------------------------------------+
-| Move   | Cost | Description                                                     |
-+--------+------+-----------------------------------------------------------------+
-| Charge | None | Increases your mana by 1. Vulnerable to ANY attack.             |
-+--------+------+-----------------------------------------------------------------+
-| Block  | None | Blocks “Bom” and “Slash”. Vulnerable to any OTHER attack.       |
-+--------+------+-----------------------------------------------------------------+
-| Jump   | None | Jumps above “Bom” and “Boom”. Vulnerable to any OTHER attack.   |
-+--------+------+-----------------------------------------------------------------+
-| Bom    | 1    | Shoots a small energy ball, loses to any other stronger attack. |
-+--------+------+-----------------------------------------------------------------+
-| Boom   | 2    | Shoots a huge energy ball, loses to “Smash”                     |
-+--------+------+-----------------------------------------------------------------+
-| Slash  | 2    | Slashes wildly, loses to “Smash”                                |
-+--------+------+-----------------------------------------------------------------+
-| Smash  | 4    | Smashes the opponent with enormous power.                       |
-+--------+------+-----------------------------------------------------------------+`''')
-            return
-        elif info != 'none':
-            await ctx.send(content = f"Type `{ctx.prefix}charge` to challenge me to a game of Charge! Or `{ctx.prefix}charge moves` to view the movelist.")
-            return
-        else:    
-            player = Player(ctx.message.author.name)
-            player_avatar = ctx.message.author.avatar_url
-            cpu = Player(self.bot.user.name)
-            cpu_avatar = self.bot.user.avatar_url
-            move_dict = {
-                'charge': {'cost': -1},
-                'block': {'cost': 0},
-                'jump': {'cost': 0},
-                'bom': {'cost': 1},
-                'boom': {'cost': 2},
-                'slash': {'cost': 2},
-                'smash': {'cost': 4}
-            }
-            
-            # Initialise embed
+        player = Player(ctx.message.author.name)
+        player_avatar = ctx.message.author.avatar_url
+        cpu = Player(self.bot.user.name)
+        cpu_avatar = self.bot.user.avatar_url
+        
+        # Initialise embed
+        charge_embed = discord.Embed(
+            title = 'Charge',
+            description = f"{player.name} challenged {cpu.name} to a game of Charge!\n{player.name} used {player.move}!\n{cpu.name} used {cpu.move}!",
+            color = 0x3498DB # BLUE
+        )
+        
+        # Game until one player loses
+        while player.status != 'dead' and cpu.status != 'dead':
+            charge_embed.add_field(
+                name = '\u200b',
+                value = f"+-------------------------------+\n{player.name}'s :yin_yang:Mana: {player.mana}\n+-------------------------------+\n{cpu.name}'s :yin_yang:Mana: {cpu.mana}\n+-------------------------------+\n\nNext move?",
+                inline = False
+            )
+            await ctx.send(embed = charge_embed)
+
+            # Player move
+            msg = await self.bot.wait_for('message', check = check)
+            player_move = msg.content.lower()
+            if player_move == 'moves':
+                await ctx.send(content = '''`+--------+------+-------------------+
+| Move   | Cost | Description       |
++--------+------+-------------------+
+| Charge | None | +1 Mana           |
++--------+------+-------------------+
+| Block  | None | Blocks Bom, Slash |
++--------+------+-------------------+
+| Jump   | None | Dodges Bom, Boom  |
++--------+------+-------------------+
+| Bom    | 1    | Level 1 Attack    |
++--------+------+-------------------+
+| Boom   | 2    | Level 2 Attack    |
++--------+------+-------------------+
+| Slash  | 2    | Level 2 Attack    |
++--------+------+-------------------+
+| Fwoosh | 4    | Level 4 Attack    |
++--------+------+-------------------+`''')
+                charge_embed = discord.Embed(
+                    title = 'Charge!',
+                    description = "Aight here's yer movelist.",
+                    color = 0x3498DB # BLUE
+                )
+                continue
+            elif player_move not in move_dict:
+                charge_embed = discord.Embed(
+                    title = 'Charge!',
+                    description = f"What kind of move is {player_move}?!\nType `moves` to see the movelist.",
+                    color = 0x3498DB
+                )
+                continue
+            elif player.mana - move_dict[player_move]['cost'] < 0:
+                charge_embed = discord.Embed(
+                    title = 'Charge!',
+                    description = "Not enough mana!",
+                    color = 0x3498DB
+                )
+                continue
+            else:
+                player.use_move(move_dict[player_move]['stylized'], move_dict[player_move]['cost'])
+                
+            # CPU move
+            cpu_move = random.choice(list(move_dict))
+            while cpu.mana - move_dict[cpu_move]['cost'] < 0:
+                cpu_move = random.choice(list(move_dict))
+            cpu.use_move(move_dict[cpu_move]['stylized'], move_dict[cpu_move]['cost'])
+
             charge_embed = discord.Embed(
-                title = 'Charge',
-                description = f"{player.name} challenged {cpu.name} to a game of Charge!\n{player.name} used {player.move}!\n{cpu.name} used {cpu.move}!",
+                title = 'Charge!',
+                description = f"{player.name} used {player.move}!\n{cpu.name} used {cpu.move}!",
                 color = 0x3498DB # BLUE
             )
             
-            # Game until one player loses
-            while player.status != 'dead' and cpu.status != 'dead':
+            # Fight commence!
+            # Both charge
+            if player.status == cpu.status == 'restore':
                 charge_embed.add_field(
                     name = '\u200b',
-                    value = f"+-------------------------------+\n{player.name}'s mana: {player.mana}\n+-------------------------------+\n{cpu.name}'s mana: {cpu.mana}\n+-------------------------------+\n\nNext move?",
+                    value = announce('both_restore', player, cpu),
                     inline = False
                 )
-                await ctx.send(embed = charge_embed)
-
-                # Player move
-                msg = await self.bot.wait_for('message', check = check)
-                player_move = msg.content.lower()
-                if player_move == 'moves':
-                    await ctx.send(content = '''`+--------+------+-----------------------------------------------------------------+
-| Move   | Cost | Description                                                     |
-+--------+------+-----------------------------------------------------------------+
-| Charge | None | Increases your mana by 1. Vulnerable to ANY attack.             |
-+--------+------+-----------------------------------------------------------------+
-| Block  | None | Blocks “Bom” and “Slash”. Vulnerable to any OTHER attack.       |
-+--------+------+-----------------------------------------------------------------+
-| Jump   | None | Jumps above “Bom” and “Boom”. Vulnerable to any OTHER attack.   |
-+--------+------+-----------------------------------------------------------------+
-| Bom    | 1    | Shoots a small energy ball, loses to any other stronger attack. |
-+--------+------+-----------------------------------------------------------------+
-| Boom   | 2    | Shoots a huge energy ball, loses to “Smash”                     |
-+--------+------+-----------------------------------------------------------------+
-| Slash  | 2    | Slashes wildly, loses to “Smash”                                |
-+--------+------+-----------------------------------------------------------------+
-| Smash  | 4    | Smashes the opponent with enormous power.                       |
-+--------+------+-----------------------------------------------------------------+`''')
-                    charge_embed = discord.Embed(
-                        title = 'Charge!',
-                        description = "Aight here's yer movelist.",
-                        color = 0x3498DB # BLUE
-                    )
-                    continue
-                elif player_move not in move_dict:
-                    charge_embed = discord.Embed(
-                        title = 'Charge!',
-                        description = f"What kind of move is {player_move}?!\nType `moves` to see the movelist.",
-                        color = 0x3498DB
-                    )
-                    continue
-                elif player.mana - move_dict[player_move]['cost'] < 0:
-                    charge_embed = discord.Embed(
-                        title = 'Charge!',
-                        description = "Not enough mana!",
-                        color = 0x3498DB
-                    )
-                    continue
-                else:
-                    player.use_move(player_move, move_dict[player_move]['cost'])
-                    
-                # CPU move
-                cpu_move = random.choice(list(move_dict))
-                while cpu.mana - move_dict[cpu_move]['cost'] < 0:
-                    cpu_move = random.choice(list(move_dict))
-                cpu.use_move(cpu_move, move_dict[cpu_move]['cost'])
-
-                charge_embed = discord.Embed(
-                    title = 'Charge!',
-                    description = f"{player.name} used {player.move}!\n{cpu.name} used {cpu.move}!",
-                    color = 0x3498DB # BLUE
+            # Both defend
+            elif player.status == cpu.status == 'defence':
+                charge_embed.add_field(
+                    name = '\u200b',
+                    value = both_defend(player, cpu),
+                    inline = False
                 )
-                
-                # Fight commence!
-                # Both charge
-                if player.status == cpu.status == 'restore':
+            # Both same attack power
+            elif player.status == cpu.status == 'attack' and player.power == cpu.power:
+                if player.move != cpu.move:
                     charge_embed.add_field(
                         name = '\u200b',
-                        value = announce('both_restore', player, cpu),
+                        value = announce('diff_attack', player, cpu),
                         inline = False
                     )
-                # Both defend
-                elif player.status == cpu.status == 'defence':
-                    charge_embed.add_field(
-                        name = '\u200b',
-                        value = both_defend(player, cpu),
-                        inline = False
-                    )
-                # Both same attack power
-                elif player.status == cpu.status == 'attack' and player.power == cpu.power:
-                    if player.move != cpu.move:
-                        charge_embed.add_field(
-                            name = '\u200b',
-                            value = announce('diff_attack', player, cpu),
-                            inline = False
-                        )
-                    else:
-                        charge_embed.add_field(
-                            name = '\u200b',
-                            value = announce('same_attack', player, cpu),
-                            inline = False
-                        )
-                
-                # Defend and charge
-                elif player.status == 'restore' and cpu.status == 'defence' or cpu.status == 'restore' and player.status == 'defence':
-                    charge_embed.add_field(
-                        name = '\u200b',
-                        value = charge_defend(player, cpu),
-                        inline = False
-                    )
-                
-                # Defend and attack
-                elif player.status == 'defence' and cpu.status == 'attack' or player.status == 'attack' and cpu.status == 'defence':
-                    charge_embed.add_field(
-                        name = '\u200b',
-                        value = defend_attack(player, cpu),
-                        inline = False
-                    )
-                    
-                # Overpowering attacks
                 else:
                     charge_embed.add_field(
                         name = '\u200b',
-                        value = attack_overpower(player, cpu),
+                        value = announce('same_attack', player, cpu),
                         inline = False
                     )
             
-            if player.status == cpu.status == 'dead':
-                await ctx.send(content = "[ERROR] Something wrong occurred during the fight. Both dead.")
-            elif player.status == 'dead':
+            # Defend and charge
+            elif player.status == 'restore' and cpu.status == 'defence' or cpu.status == 'restore' and player.status == 'defence':
                 charge_embed.add_field(
                     name = '\u200b',
-                    value = f"{cpu.name} WINS! :tada:",
+                    value = charge_defend(player, cpu),
                     inline = False
                 )
-                charge_embed.color = 0xE74C3C # RED0x2ECC71 # GREEN
-                charge_embed.set_thumbnail(url = self.bot.user.avatar_url)
-                await ctx.send(embed = charge_embed)
-            elif cpu.status == 'dead':
+            
+            # Defend and attack
+            elif player.status == 'defence' and cpu.status == 'attack' or player.status == 'attack' and cpu.status == 'defence':
                 charge_embed.add_field(
                     name = '\u200b',
-                    value = f"{cpu.name} WINS! :tada:",
+                    value = defend_attack(player, cpu),
                     inline = False
                 )
-                charge_embed.color = 0x2ECC71 # GREEN
-                charge_embed.set_thumbnail(url = ctx.message.author.avatar_url)
-                await ctx.send(embed = charge_embed)
+                
+            # Overpowering attacks
             else:
-                await ctx.send(content = "[ERROR] Both players are still alive. Code should not have reached here.")
-            
-            ctx.command.reset_cooldown(ctx)
+                charge_embed.add_field(
+                    name = '\u200b',
+                    value = attack_overpower(player, cpu),
+                    inline = False
+                )
+        
+        if player.status == cpu.status == 'dead':
+            await ctx.send(content = "[ERROR] Something wrong occurred during the fight. Both dead.")
+        elif player.status == 'dead':
+            charge_embed.add_field(
+                name = '\u200b',
+                value = f"{cpu.name} WINS! :tada:",
+                inline = False
+            )
+            charge_embed.color = 0xE74C3C # RED0x2ECC71 # GREEN
+            charge_embed.set_thumbnail(url = self.bot.user.avatar_url)
+            await ctx.send(embed = charge_embed)
+        elif cpu.status == 'dead':
+            charge_embed.add_field(
+                name = '\u200b',
+                value = f"{cpu.name} WINS! :tada:",
+                inline = False
+            )
+            charge_embed.color = 0x2ECC71 # GREEN
+            charge_embed.set_thumbnail(url = ctx.message.author.avatar_url)
+            await ctx.send(embed = charge_embed)
+        else:
+            await ctx.send(content = "[ERROR] Both players are still alive. Code should not have reached here.")
+        
+        ctx.command.reset_cooldown(ctx)
     
     @charge_command.error
     async def charge_command_handler(self, ctx, error):

@@ -160,7 +160,7 @@ Type `$charge moves` for movelist'''
                 move = 'fwoosh'
             elif player.mana == 0:
                 move = random.choice(list(move_dict))
-                while cpu.mana - move_dict[move]['cost'] < 0 or move_dict[move]['cost'] == 0:
+                while cpu.mana - move_dict[move]['cost'] < 0 or move_dict[move]['status'] == 'defence':
                     move = random.choice(list(move_dict))
             else:
                 move = random.choice(list(move_dict))

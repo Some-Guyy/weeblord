@@ -132,6 +132,7 @@ Type `$charge moves` for movelist'''
                 self.name = name
                 self.mana = 1
                 self.status = 'standby'
+                self.move = 'charge'
             
             def use_move(self, move_name, cost):
                 self.move = move_name
@@ -302,13 +303,17 @@ Type `$charge moves` for movelist'''
             # Initialise embed
             charge_embed = discord.Embed(
                 title = 'Charge',
-                description = f"{player.name} challenged {cpu.name} to a game of Charge!\n{player.name} charged!\n{cpu.name} charged!\n\nNext move?",
+                description = f"{player.name} challenged {cpu.name} to a game of Charge!",
                 color = 0x3498DB # BLUE
             )
             
             # Game until one player loses
             while player.status != 'dead' and cpu.status != 'dead':
                 charge_embed.add_field(
+                    name = '\u200b',
+                    value = f"{player.name} used {player.move}!\n{cpu.name} used {cpu.move}!",
+                    inline = False
+                ).add_field(
                     name = '\u200b',
                     value = f"+-------------------------------+\n{player.name}'s mana: {player.mana}\n+-------------------------------+\n{cpu.name}'s mana: {cpu.mana}\n+-------------------------------+\n\nNext move?",
                     inline = False

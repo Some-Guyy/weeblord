@@ -342,7 +342,7 @@ Type `$charge moves` for movelist'''
 +--------+------+-------------------+`''')
                 charge_embed = discord.Embed(
                     title = 'Charge!',
-                    description = "Aight here's yer movelist.",
+                    description = "Aight there's yer movelist.",
                     color = 0x3498DB # BLUE
                 )
                 continue

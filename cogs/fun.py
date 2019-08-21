@@ -303,17 +303,13 @@ Type `$charge moves` for movelist'''
             # Initialise embed
             charge_embed = discord.Embed(
                 title = 'Charge',
-                description = f"{player.name} challenged {cpu.name} to a game of Charge!",
+                description = f"{player.name} challenged {cpu.name} to a game of Charge!\n{player.name} used {player.move}!\n{cpu.name} used {cpu.move}!",
                 color = 0x3498DB # BLUE
             )
             
             # Game until one player loses
             while player.status != 'dead' and cpu.status != 'dead':
                 charge_embed.add_field(
-                    name = '\u200b',
-                    value = f"{player.name} used {player.move}!\n{cpu.name} used {cpu.move}!",
-                    inline = False
-                ).add_field(
                     name = '\u200b',
                     value = f"+-------------------------------+\n{player.name}'s mana: {player.mana}\n+-------------------------------+\n{cpu.name}'s mana: {cpu.mana}\n+-------------------------------+\n\nNext move?",
                     inline = False
@@ -369,59 +365,65 @@ Type `$charge moves` for movelist'''
                 while cpu.mana - move_dict[cpu_move]['cost'] < 0:
                     cpu_move = random.choice(list(move_dict))
                 cpu.use_move(cpu_move, move_dict[cpu_move]['cost'])
+
+                charge_embed = discord.Embed(
+                    title = 'Charge!',
+                    description = f"{player.name} used {player.move}!\n{cpu.name} used {cpu.move}!",
+                    color = 0x3498DB # BLUE
+                )
                 
                 # Fight commence!
                 # Both charge
                 if player.status == cpu.status == 'restore':
-                    charge_embed = discord.Embed(
-                        title = 'Charge!',
-                        description = announce('both_restore', player, cpu),
-                        color = 0x3498DB
+                    charge_embed.add_field(
+                        name = '\u200b',
+                        value = announce('both_restore', player, cpu),
+                        inline = False
                     )
                 # Both defend
                 elif player.status == cpu.status == 'defence':
-                    charge_embed = discord.Embed(
-                        title = 'Charge!',
-                        description = both_defend(player, cpu),
-                        color = 0x3498DB
+                    charge_embed.add_field(
+                        name = '\u200b',
+                        value = both_defend(player, cpu),
+                        inline = False
                     )
                 # Both same attack power
                 elif player.status == cpu.status == 'attack' and player.power == cpu.power:
                     if player.move != cpu.move:
-                        charge_embed = discord.Embed(
-                            title = 'Charge!',
-                            description = announce('diff_attack', player, cpu),
-                            color = 0x3498DB
+                        charge_embed.add_field(
+                            name = '\u200b',
+                            value = announce('diff_attack', player, cpu),
+                            inline = False
                         )
                     else:
-                        charge_embed = discord.Embed(
-                            title = 'Charge!',
-                            description = announce('same_attack', player, cpu),
-                            color = 0x3498DB
+                        charge_embed.add_field(
+                            name = '\u200b',
+                            value = announce('same_attack', player, cpu),
+                            inline = False
                         )
                 
                 # Defend and charge
                 elif player.status == 'restore' and cpu.status == 'defence' or cpu.status == 'restore' and player.status == 'defence':
-                    charge_embed = discord.Embed(
-                        title = 'Charge!',
-                        description = charge_defend(player, cpu),
-                        color = 0x3498DB
+                    charge_embed.add_field(
+                        name = '\u200b',
+                        value = charge_defend(player, cpu),
+                        inline = False
                     )
                 
                 # Defend and attack
                 elif player.status == 'defence' and cpu.status == 'attack' or player.status == 'attack' and cpu.status == 'defence':
-                    charge_embed = discord.Embed(
-                        title = 'Charge!',
-                        description = defend_attack(player, cpu),
-                        color = 0x3498DB
+                    charge_embed.add_field(
+                        name = '\u200b',
+                        value = defend_attack(player, cpu),
+                        inline = False
                     )
                     
                 # Overpowering attacks
                 else:
-                    charge_embed = discord.Embed(
-                        title = 'Charge!',
-                        description = attack_overpower(player, cpu),
-                        color = 0x3498DB
+                    charge_embed.add_field(
+                        name = '\u200b',
+                        value = attack_overpower(player, cpu),
+                        inline = False
                     )
             
             if player.status == cpu.status == 'dead':
@@ -429,7 +431,8 @@ Type `$charge moves` for movelist'''
             elif player.status == 'dead':
                 charge_embed.add_field(
                     name = '\u200b',
-                    value = f"{cpu.name} WINS! :tada:"
+                    value = f"{cpu.name} WINS! :tada:",
+                    inline = False
                 )
                 charge_embed.color = 0xE74C3C # RED0x2ECC71 # GREEN
                 charge_embed.set_thumbnail(url = self.bot.user.avatar_url)
@@ -437,13 +440,14 @@ Type `$charge moves` for movelist'''
             elif cpu.status == 'dead':
                 charge_embed.add_field(
                     name = '\u200b',
-                    value = f"{cpu.name} WINS! :tada:"
+                    value = f"{cpu.name} WINS! :tada:",
+                    inline = False
                 )
                 charge_embed.color = 0x2ECC71 # GREEN
                 charge_embed.set_thumbnail(url = ctx.message.author.avatar_url)
                 await ctx.send(embed = charge_embed)
             else:
-                await ctx.send(content = "[ERROR] Both players are still alive.")
+                await ctx.send(content = "[ERROR] Both players are still alive. Code should not have reached here.")
             
             ctx.command.reset_cooldown(ctx)
     

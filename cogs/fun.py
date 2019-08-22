@@ -47,7 +47,7 @@ class Fun(commands.Cog):
             color = 0xE91E63 # LUMINOUS_VIVID_PINK
         )
         uwu_embed.set_author(
-            name = message.author.nick,
+            name = message.author.display_name,
             icon_url = message.author.avatar_url
         )
         await ctx.send(embed = uwu_embed)
@@ -99,21 +99,21 @@ class Fun(commands.Cog):
                 await ctx.send(content = f"Wrong command bro, what the heck is {ctx.message.author}?")
                 return
             elif choice.lower() in option_aliases:
-                player = (ctx.message.author.nick, options[option_aliases.index(choice.lower())])
+                player = (ctx.message.author.display_name, options[option_aliases.index(choice.lower())])
             else:
-                player = (ctx.message.author.nick, choice.lower())
+                player = (ctx.message.author.display_name, choice.lower())
             
-            cpu = (self.bot.user.nick, options[random.randrange(len(options))])
+            cpu = (self.bot.user.display_name, options[random.randrange(len(options))])
             
             rps_embed = discord.Embed(
                 title = 'Rock, Paper, Scissors!',
-                description = f"{ctx.message.author.nick} used {option_emoji[options.index(player[1])]}!\n{self.bot.user.nick} used {option_emoji[options.index(cpu[1])]}!\n\n"
+                description = f"{ctx.message.author.display_name} used {option_emoji[options.index(player[1])]}!\n{self.bot.user.display_name} used {option_emoji[options.index(cpu[1])]}!\n\n"
             )
 
             if rps_sesh(player, cpu) == 'draw':
                 rps_embed.description += "It's a Draw!"
                 rps_embed.color = 0xF1C40F # GOLD
-            elif rps_sesh(player, cpu) == self.bot.user.nick:
+            elif rps_sesh(player, cpu) == self.bot.user.display_name:
                 rps_embed.description += f"{rps_sesh(player, cpu)} wins! :tada:"
                 rps_embed.color = 0xE74C3C # RED
                 rps_embed.set_thumbnail(url = self.bot.user.avatar_url)
@@ -298,9 +298,9 @@ The main feature of this game is mana. Moves you can perform will have different
             # As well as by the user who used the command.
             return m.channel == ctx.message.channel and m.author == ctx.message.author
         
-        player = Player(ctx.message.author.nick)
+        player = Player(ctx.message.author.display_name)
         player_avatar = ctx.message.author.avatar_url
-        cpu = Player(self.bot.user.nick)
+        cpu = Player(self.bot.user.display_name)
         cpu_avatar = self.bot.user.avatar_url
         
         # Initialise embed
@@ -469,7 +469,7 @@ The main feature of this game is mana. Moves you can perform will have different
             print(f"[INFO] {ctx.message.author} took to long to respond during Charge in {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}")
             charge_embed = discord.Embed(
                 title = 'Charge!',
-                description = f"{ctx.message.author.nick}, you took too long to respond!\n{self.bot.user.nick} WINS! :tada:",
+                description = f"{ctx.message.author.display_name}, you took too long to respond!\n{self.bot.user.display_name} WINS! :tada:",
                 inline = False
             )
             charge_embed.color = 0xE74C3C # RED

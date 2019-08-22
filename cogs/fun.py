@@ -47,7 +47,7 @@ class Fun(commands.Cog):
             color = 0xE91E63 # LUMINOUS_VIVID_PINK
         )
         uwu_embed.set_author(
-            name = message.author.name,
+            name = message.author.nick,
             icon_url = message.author.avatar_url
         )
         await ctx.send(embed = uwu_embed)
@@ -99,21 +99,21 @@ class Fun(commands.Cog):
                 await ctx.send(content = f"Wrong command bro, what the heck is {ctx.message.author}?")
                 return
             elif choice.lower() in option_aliases:
-                player = (ctx.message.author.name, options[option_aliases.index(choice.lower())])
+                player = (ctx.message.author.nick, options[option_aliases.index(choice.lower())])
             else:
-                player = (ctx.message.author.name, choice.lower())
+                player = (ctx.message.author.nick, choice.lower())
             
-            cpu = (self.bot.user.name, options[random.randrange(len(options))])
+            cpu = (self.bot.user.nick, options[random.randrange(len(options))])
             
             rps_embed = discord.Embed(
                 title = 'Rock, Paper, Scissors!',
-                description = f"{ctx.message.author.name} used {option_emoji[options.index(player[1])]}!\n{self.bot.user.name} used {option_emoji[options.index(cpu[1])]}!\n\n"
+                description = f"{ctx.message.author.nick} used {option_emoji[options.index(player[1])]}!\n{self.bot.user.nick} used {option_emoji[options.index(cpu[1])]}!\n\n"
             )
 
             if rps_sesh(player, cpu) == 'draw':
                 rps_embed.description += "It's a Draw!"
                 rps_embed.color = 0xF1C40F # GOLD
-            elif rps_sesh(player, cpu) == self.bot.user.name:
+            elif rps_sesh(player, cpu) == self.bot.user.nick:
                 rps_embed.description += f"{rps_sesh(player, cpu)} wins! :tada:"
                 rps_embed.color = 0xE74C3C # RED
                 rps_embed.set_thumbnail(url = self.bot.user.avatar_url)
@@ -171,7 +171,7 @@ The main feature of this game is mana. Moves you can perform will have different
                 while cpu.mana - move_dict[move]['cost'] < 0 or move_dict[move]['status'] == 'defence':
                     move = random.choice(list(move_dict))
             else:
-                if random.randrange(100) < 30:
+                if random.randrange(100) < 20:
                     move = 'charge'
                 else:
                     move = random.choice(list(move_dict))
@@ -298,9 +298,9 @@ The main feature of this game is mana. Moves you can perform will have different
             # As well as by the user who used the command.
             return m.channel == ctx.message.channel and m.author == ctx.message.author
         
-        player = Player(ctx.message.author.name)
+        player = Player(ctx.message.author.nick)
         player_avatar = ctx.message.author.avatar_url
-        cpu = Player(self.bot.user.name)
+        cpu = Player(self.bot.user.nick)
         cpu_avatar = self.bot.user.avatar_url
         
         # Initialise embed
@@ -469,7 +469,7 @@ The main feature of this game is mana. Moves you can perform will have different
             print(f"[INFO] {ctx.message.author} took to long to respond during Charge in {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}")
             charge_embed = discord.Embed(
                 title = 'Charge!',
-                description = f"{ctx.message.author.name}, you took too long to respond!\n{self.bot.user.name} WINS! :tada:",
+                description = f"{ctx.message.author.nick}, you took too long to respond!\n{self.bot.user.nick} WINS! :tada:",
                 inline = False
             )
             charge_embed.color = 0xE74C3C # RED

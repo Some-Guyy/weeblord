@@ -103,17 +103,17 @@ class Fun(commands.Cog):
             else:
                 player = (ctx.message.author.display_name, choice.lower())
             
-            cpu = (self.bot.user.display_name, options[random.randrange(len(options))])
+            cpu = (ctx.guild.me.display_name, options[random.randrange(len(options))])
             
             rps_embed = discord.Embed(
                 title = 'Rock, Paper, Scissors!',
-                description = f"{ctx.message.author.display_name} used {option_emoji[options.index(player[1])]}!\n{self.bot.user.display_name} used {option_emoji[options.index(cpu[1])]}!\n\n"
+                description = f"{ctx.message.author.display_name} used {option_emoji[options.index(player[1])]}!\n{ctx.guild.me.display_name} used {option_emoji[options.index(cpu[1])]}!\n\n"
             )
 
             if rps_sesh(player, cpu) == 'draw':
                 rps_embed.description += "It's a Draw!"
                 rps_embed.color = 0xF1C40F # GOLD
-            elif rps_sesh(player, cpu) == self.bot.user.display_name:
+            elif rps_sesh(player, cpu) == ctx.guild.me.display_name:
                 rps_embed.description += f"{rps_sesh(player, cpu)} wins! :tada:"
                 rps_embed.color = 0xE74C3C # RED
                 rps_embed.set_thumbnail(url = self.bot.user.avatar_url)
@@ -300,7 +300,7 @@ The main feature of this game is mana. Moves you can perform will have different
         
         player = Player(ctx.message.author.display_name)
         player_avatar = ctx.message.author.avatar_url
-        cpu = Player(self.bot.user.display_name)
+        cpu = Player(ctx.guild.me.display_name)
         cpu_avatar = self.bot.user.avatar_url
         
         # Initialise embed
@@ -469,7 +469,7 @@ The main feature of this game is mana. Moves you can perform will have different
             print(f"[INFO] {ctx.message.author} took to long to respond during Charge in {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}")
             charge_embed = discord.Embed(
                 title = 'Charge!',
-                description = f"{ctx.message.author.display_name}, you took too long to respond!\n{self.bot.user.display_name} WINS! :tada:",
+                description = f"{ctx.message.author.display_name}, you took too long to respond!\n{ctx.guild.me.display_name} WINS! :tada:",
                 inline = False
             )
             charge_embed.color = 0xE74C3C # RED

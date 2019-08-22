@@ -5,7 +5,7 @@ from datetime import datetime
 import asyncio
 
 # Bot version
-version = "0.5.2"
+version = "0.5.3"
 
 # These color constants are taken from discord.js library
 colors = {
@@ -60,6 +60,10 @@ class Basic(commands.Cog):
             title = 'Help',
             description = f"*Bot version: {version}*\n",
             color = colors['PURPLE']
+        ).add_field(
+            name = '\u200b',
+            value = "__**Below are the categories and each command that it contains:**__",
+            inline = False
         )
 
         # Get a list of all cogs
@@ -79,6 +83,12 @@ class Basic(commands.Cog):
                     value = commands_list,
                     inline = False
                 )
+            
+            help_embed.add_field(
+                name = '\u200b',
+                value = f"To learn more about a specific command, use `{ctx.prefix}help <command>`.",
+                inline = False
+            )
 
             await ctx.send(embed = help_embed)
             return

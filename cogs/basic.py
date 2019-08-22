@@ -1,10 +1,11 @@
 import discord
 from discord.ext import commands
+
 from datetime import datetime
 import asyncio
 
 # Bot version
-version = "0.4.28"
+version = "0.5.0"
 
 # These color constants are taken from discord.js library
 colors = {
@@ -101,7 +102,7 @@ class Basic(commands.Cog):
 
     @commands.command(
         name = 'ping',
-        description = "To check if I'm alive.",
+        description = "To check if I'm still alive.",
         aliases = ['p']
     )
     async def ping_command(self, ctx):

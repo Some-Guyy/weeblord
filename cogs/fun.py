@@ -69,6 +69,8 @@ class Fun(commands.Cog):
                 synset_list = wordnet.synsets(word)
                 thesaurized_word = word
                 while thesaurized_word == word:
+                    if len(word) == 1:
+                        break
                     if len(synset_list) > 0:
                         usable_synset_list = []
                         for synset in synset_list:

@@ -5,7 +5,7 @@ from datetime import datetime
 import asyncio
 
 # Bot version
-version = "0.5.1"
+version = "0.5.2"
 
 # These color constants are taken from discord.js library
 colors = {
@@ -150,7 +150,7 @@ class Basic(commands.Cog):
                 await ctx.send(content = roll_text)
 
             except ValueError:
-                await ctx.send(content = "Use whole numbers only dude, I don't have a magical dice in here!")
+                await ctx.send(content = "Use whole numbers only dude, I don't have magical dice in here!")
 
 
 def setup(bot):

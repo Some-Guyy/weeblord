@@ -58,12 +58,12 @@ class Basic(commands.Cog):
         # Prepare the embed
         help_embed = discord.Embed(
             title = 'Help',
+            description = f"*Bot version: {version}*\n",
             color = colors['PURPLE']
         )
 
         # Get a list of all cogs
         cogs = [c for c in self.bot.cogs.keys()]
-        help_embed.description = f"*Bot version: {version}*\n"
 
         # If cog is not specified by the user, we list all cogs and commands
         if command == 'all':

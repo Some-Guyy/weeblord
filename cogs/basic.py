@@ -60,10 +60,6 @@ class Basic(commands.Cog):
             title = 'Help',
             description = f"*Bot version: {version}*\n",
             color = colors['PURPLE']
-        ).add_field(
-            name = '\u200b',
-            value = "__**Below are the categories and each command that it contains:**__",
-            inline = False
         )
 
         # Get a list of all cogs
@@ -71,6 +67,12 @@ class Basic(commands.Cog):
 
         # If cog is not specified by the user, we list all cogs and commands
         if command == 'all':
+            help_embed.add_field(
+                name = '\u200b',
+                value = "__**Below are the categories and each command that it contains:**__",
+                inline = False
+            )
+
             for cog in cogs:
                 # Get a list of all commands under each cog
                 cog_commands = self.bot.get_cog(cog).get_commands()

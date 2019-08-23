@@ -5,7 +5,7 @@ from datetime import datetime
 import asyncio
 
 # Bot version
-version = "0.5.3"
+version = "0.5.4"
 
 # These color constants are taken from discord.js library
 colors = {
@@ -50,6 +50,7 @@ class Basic(commands.Cog):
         description = "Ay dood what do you think this command is for?",
         aliases = ['h', 'commands', 'command']
     )
+    @commands.guild_only()
     async def help_command(self, ctx, command='all'):
         # Show that the bot is typing until a message is sent
         await ctx.channel.trigger_typing()
@@ -136,6 +137,7 @@ class Basic(commands.Cog):
         description = "The basic roll command. Every discord bot should have this, right? Choose a number and I'll roll a random number up to your chosen one.",
         aliases = ['r']
     )
+    @commands.guild_only()
     async def roll_command(self, ctx, roll_amount = 'none'):
         await ctx.channel.trigger_typing()
 

@@ -13,6 +13,7 @@ class Games(commands.Cog):
         name = 'rps',
         description = "Rock, Paper, Scissors!"
     )
+    @commands.guild_only()
     async def rps_command(self, ctx, choice = 'none'):
         await ctx.channel.trigger_typing()
 
@@ -87,6 +88,7 @@ class Games(commands.Cog):
 The main feature of this game is mana. Moves you can perform will have different mana costs.
 During a match, type `moves` to see the movelist.'''
     )
+    @commands.guild_only()
     @commands.cooldown(1, 86400, commands.BucketType.channel)
     async def charge_command(self, ctx):
         await ctx.channel.trigger_typing()

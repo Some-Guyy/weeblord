@@ -15,6 +15,7 @@ class Fun(commands.Cog):
         description = "Uwu-ify de pwevious message. UwU",
         aliases = ['uwu']
     )
+    @commands.guild_only()
     async def uwu_command(self, ctx):
         await ctx.channel.trigger_typing()
 
@@ -59,6 +60,7 @@ class Fun(commands.Cog):
         description = "Replace every word from the previous message into another word with a similar meaning. *(hopefully)*",
         aliases = ['tsr']
     )
+    @commands.guild_only()
     async def thesaurize_command(self, ctx):
         await ctx.channel.trigger_typing()
 

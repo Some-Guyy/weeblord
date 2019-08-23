@@ -19,7 +19,7 @@ class Games(commands.Cog):
         await ctx.channel.trigger_typing()
 
         if choice == 'none':
-            await ctx.send(content = f"To use this command, type `{ctx.prefix}rps <choice>`\nChoices: `r/rock, p/paper, s/scissors`")
+            await ctx.send(content = f"To use this command, type `{ctx.prefix}{ctx.command} <choice>`\nChoices: `r/rock, p/paper, s/scissors`")
         else:
             def rps_sesh(player1, player2):
                 none = []

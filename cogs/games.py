@@ -439,7 +439,7 @@ During a match, type `moves` to see the movelist.'''
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.author.send(content = f"Whoa {ctx.message.author.name}?! Sorry, but if you wanna fight me, do it in a server. I'd rather beat you when everyone is looking :sunglasses:")
         else:
-            print("Ignoring exception in command {}:".format(ctx.command), file=sys.stderr)
+            print("[ERROR] Ignoring exception in command {}:".format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 

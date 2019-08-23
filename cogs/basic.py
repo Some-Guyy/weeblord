@@ -5,7 +5,7 @@ from datetime import datetime
 import asyncio
 
 # Bot version
-version = "0.5.7"
+version = "0.5.8"
 
 # New - The Cog class must extend the commands.Cog class
 class Basic(commands.Cog):
@@ -48,7 +48,7 @@ class Basic(commands.Cog):
                 return await ctx.send("I couldn't find whoever that is. Are you sure they even exist?")
 
         # All other Errors not returned come here... And we can just print the default TraceBack.
-        print("Ignoring exception in command {}:".format(ctx.command), file=sys.stderr)
+        print("[ERROR] Ignoring exception in command {}:".format(ctx.command), file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
     
     # Define a new command

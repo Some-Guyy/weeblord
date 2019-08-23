@@ -440,8 +440,8 @@ During a match, type `moves` to see the movelist.'''
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.author.send(content = f"Whoa {ctx.message.author.name}?! Sorry, but if you wanna fight me, do it in a server. I'd rather beat you when everyone is looking :sunglasses:")
         else:
-            print(f"[ERROR] Ignoring exception in command {ctx.prefix}{ctx.command}:", file=sys.stderr)
-            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr, f"\nInvoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}")
+            print(f"[ERROR] Ignoring exception in command {ctx.prefix}{ctx.command}:", file=sys.stderr, f"\nInvoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}")
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
 def setup(bot):

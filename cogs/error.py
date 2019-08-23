@@ -45,8 +45,8 @@ class Error(commands.Cog):
                 return await ctx.send("I couldn't find whoever that is. Are you sure they even exist?")
 
         # All other Errors not returned come here... And we can just print the default TraceBack.
-        print(f"[ERROR] Ignoring exception in command {ctx.prefix}{ctx.command}:", file=sys.stderr)
-        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr, f"\nInvoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}")
+        print(f"[ERROR] Ignoring exception in command {ctx.prefix}{ctx.command}:", file=sys.stderr, f"\nInvoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}")
+        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
 def setup(bot):

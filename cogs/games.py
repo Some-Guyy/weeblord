@@ -4,6 +4,7 @@ from discord.ext import commands
 from datetime import datetime
 import random
 import asyncio
+import traceback
 
 class Games(commands.Cog):
     def __init__(self, bot):

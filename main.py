@@ -14,7 +14,7 @@ bot = commands.Bot(
     case_insensitive = True
 )
 
-cogs = ['cogs.basic', 'cogs.fun', 'cogs.games']
+cogs = ['cogs.basic', 'cogs.error', 'cogs.fun', 'cogs.games']
 
 @bot.event
 async def on_ready():

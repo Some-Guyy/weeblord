@@ -334,7 +334,7 @@ During a match, type `moves` to see the movelist.'''
 
             charge_embed = discord.Embed(
                 title = 'Charge!',
-                description = f"{player.name} used {player.move}!\n{cpu.name} used {cpu.move}!",
+                description = f"{player.name}: {player.move}\n{cpu.name}: {cpu.move}",
                 color = 0x3498DB # BLUE
             )
             

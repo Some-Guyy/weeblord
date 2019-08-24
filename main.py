@@ -24,7 +24,7 @@ async def on_ready():
     bot.remove_command('help')
     for cog in cogs:
         bot.load_extension(cog)
-    await bot.change_presence(activity = discord.Game("with myself ( ͡° ͜ʖ ͡°) | $help"))
+    await bot.change_presence(activity = discord.Game("( ͡° ͜ʖ ͡°) | $help"))
     return
 
 bot.run(token, bot = True, reconnect = True)

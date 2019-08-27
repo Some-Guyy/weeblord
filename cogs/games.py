@@ -114,7 +114,7 @@ During a match, type `moves` to see the movelist.'''
 
         def print_error(error_message):
             log_message = f"[ERROR] {error_message}\nTimestamp: {datetime.now()}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord-beta.txt", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
 
@@ -437,13 +437,13 @@ During a match, type `moves` to see the movelist.'''
     async def charge_command_handler(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             log_message = f"[INFO] {ctx.message.author} tried to run Charge in {ctx.guild} - #{ctx.channel} while an instance is already running.\nTimestamp: {datetime.now()}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord-beta.txt", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
             await ctx.send(content = f"A game of Charge is already running on this channel!")
         elif isinstance(error, commands.CommandInvokeError):
             log_message = f"[INFO] {ctx.message.author} took to long to respond during Charge in {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord-beta.txt", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
             charge_embed = discord.Embed(
@@ -458,7 +458,7 @@ During a match, type `moves` to see the movelist.'''
             await ctx.author.send(content = f"Whoa {ctx.message.author.name}?! Sorry, but if you wanna fight me, do it in a server. I'd rather beat you when everyone is looking :sunglasses:")
         else:
             log_message = f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}\nIgnoring exception in command {ctx.prefix}{ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord-beta.txt", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
 
@@ -556,19 +556,19 @@ During a match, type `moves` to see the movelist.'''
         if lives == 0:
             wm_embed = discord.Embed(
                 title = 'What movie is this?',
-                description = f":broken_heart:\nNo more lives! Game Over.\nThe movie is: {movie['title']}",
+                description = f":broken_heart:\nNo more lives! Game Over.\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{random_movie.movieID}",
                 color = 0xE74C3C # RED
             )
         elif guessed == 'yes':
             wm_embed = discord.Embed(
                 title = 'What movie is this?',
-                description = f"{player_message.author.display_name} got it right! :tada:\nThe movie is: {movie['title']}",
+                description = f"{player_message.author.display_name} got it right! :tada:\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{random_movie.movieID}",
                 color = 0x2ECC71 # GREEN
             )
             wm_embed.set_thumbnail(url = player_message.author.avatar_url)
         else:
             log_message = f"[ERROR] No one guessed right and lives were still above 0 during a WhatMovie in {ctx.guild} - #{ctx.channel}.\nTimestamp: {datetime.now()}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord-beta.txt", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
             wm_embed = discord.Embed(
@@ -583,13 +583,13 @@ During a match, type `moves` to see the movelist.'''
     async def tsr_movie_command_handler(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             log_message = f"[INFO] {ctx.message.author} tried to run WhatMovie in {ctx.guild} - #{ctx.channel} while an instance is already running.\nTimestamp: {datetime.now()}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord-beta.txt", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
             await ctx.send(content = f"A game of WhatMovie is already running on this channel!")
         elif isinstance(error, commands.CommandInvokeError):
             log_message = f"[INFO] No one responded for too long during WhatMovie in {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord-beta.txt", "a+") as f:
                 f.write(f"\n{log_message}\n{error}")
             print(f"{log_message}\n{error}")
             wm_embed = discord.Embed(
@@ -603,7 +603,7 @@ During a match, type `moves` to see the movelist.'''
             await ctx.author.send(content = f"This game is wayy more fun when played in a server, so I ain't just playin with you {ctx.message.author.name}.")
         else:
             log_message = f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}\nIgnoring exception in command {ctx.prefix}{ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord-beta.txt", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
 

@@ -93,7 +93,7 @@ class Fun(commands.Cog):
 
         tsr_embed = discord.Embed(
             description = thesaurize(text),
-            color = 0x1ABC9C # AQUA
+            color = 0x11806A # DARK_AQUA
         )
         tsr_embed.set_author(
             name = message.author.display_name,

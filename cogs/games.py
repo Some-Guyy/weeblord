@@ -564,6 +564,8 @@ During a match, type `moves` to see the movelist.'''
                 description = f":broken_heart:\nNo more lives! Game Over.\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{random_movie.movieID}",
                 color = 0xE74C3C # RED
             )
+            if movie['cover url'] is not None:
+                wm_embed.set_image(url = movie['cover url'])
         elif guessed == 'yes':
             wm_embed = discord.Embed(
                 title = 'What movie is this?',
@@ -571,6 +573,8 @@ During a match, type `moves` to see the movelist.'''
                 color = 0x2ECC71 # GREEN
             )
             wm_embed.set_thumbnail(url = player_message.author.avatar_url)
+            if movie['cover url'] is not None:
+                wm_embed.set_image(url = movie['cover url'])
         else:
             log_message = f"[ERROR] No one guessed right and lives were still above 0 during a WhatMovie in {ctx.guild} - #{ctx.channel}.\nTimestamp: {datetime.now()}"
             with open("../logs/weeblord.txt", "a+") as f:

@@ -507,7 +507,7 @@ During a match, type `moves` to see the movelist.'''
                 thesaurized_list.append(thesaurized_word)
             return TreebankWordDetokenizer().detokenize(thesaurized_list)
 
-        load_message = await ctx.send(content = "Hmm which movie shall I choose...")
+        load_message = await ctx.send(content = "Hmmm which movie shall I choose? :thinking: Lemme see...")
         await ctx.channel.trigger_typing()
         random_movie = top[random.randrange(0,len(top)+1)]
         movie = ia.get_movie(random_movie.movieID)

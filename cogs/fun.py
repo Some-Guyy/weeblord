@@ -70,7 +70,11 @@ class Fun(commands.Cog):
             for word in tokenized_list:
                 synset_list = wordnet.synsets(word)
                 thesaurized_word = word
-                while thesaurized_word == word:
+                try_count = 0
+                while thesaurized_word.lower() == word.lower():
+                    try_count += 1
+                    if try_count == 21:
+                        break
                     if len(word) < 3:
                         break
                     if len(synset_list) > 0:

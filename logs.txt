@@ -1,4 +1,0 @@
-The bot will log the following:
-1) [START-UP] Whenever the bot starts up.
-2) [INFO] Information that is not necessarily important.
-3) [ERROR] Caught errors which are important to note.

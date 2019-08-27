@@ -66,6 +66,7 @@ class Fun(commands.Cog):
         await ctx.channel.trigger_typing()
 
         def thesaurize(input_string):
+            skip_words = ['who']
             tokenized_list = word_tokenize(input_string.lower())
             thesaurized_list = []
             for word in tokenized_list:
@@ -75,6 +76,8 @@ class Fun(commands.Cog):
                 while thesaurized_word.lower() == word.lower():
                     try_count += 1
                     if try_count == 21:
+                        break
+                    if word.lower() in skip_words:
                         break
                     if len(word) < 3:
                         break

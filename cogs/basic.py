@@ -6,7 +6,7 @@ from datetime import datetime
 import asyncio
 
 # Bot version
-version = "1.0.16"
+version = "1.0.17"
 
 # New - The Cog class must extend the commands.Cog class
 class Basic(commands.Cog):

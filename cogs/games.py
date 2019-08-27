@@ -515,6 +515,8 @@ During a match, type `moves` to see the movelist.'''
         random_movie = top[random.randrange(0,len(top)+1)]
         movie = ia.get_movie(random_movie.movieID)
         movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
+        while len(movie_plot) > 2048:
+            movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
         thesaurized_plot = thesaurize(movie_plot)
 
         lives = 5

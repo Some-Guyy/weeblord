@@ -1,11 +1,12 @@
 import discord
 from discord.ext import commands
+import sys
 
 from datetime import datetime
 import asyncio
 
 # Bot version
-version = "0.5.16"
+version = "1.0.12"
 
 # New - The Cog class must extend the commands.Cog class
 class Basic(commands.Cog):

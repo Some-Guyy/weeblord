@@ -1,10 +1,19 @@
 import discord
 from discord.ext import commands
+import sys
 
 from datetime import datetime
 import random
 import asyncio
 import traceback
+
+import imdb
+ia = imdb.IMDb()
+top = ia.get_top250_movies()
+from nltk.corpus import wordnet
+from nltk.tokenize import word_tokenize
+from nltk.tokenize.treebank import TreebankWordDetokenizer
+from difflib import SequenceMatcher
 
 class Games(commands.Cog):
     def __init__(self, bot):
@@ -104,7 +113,10 @@ During a match, type `moves` to see the movelist.'''
         }
 
         def print_error(error_message):
-            print(f"[ERROR] {error_message}\nTimestamp: {datetime.now()}")
+            log_message = f"[ERROR] {error_message}\nTimestamp: {datetime.now()}"
+            with open("logs.txt", "a+") as f:
+                f.write(f"\n{log_message}")
+            print(log_message)
 
         class Player:
             def __init__(self, name):
@@ -424,14 +436,19 @@ During a match, type `moves` to see the movelist.'''
     @charge_command.error
     async def charge_command_handler(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
-            print(f"[INFO] {ctx.message.author} tried to run Charge in {ctx.guild} - #{ctx.channel} while an instance is already running.\nTimestamp: {datetime.now()}")
+            log_message = f"[INFO] {ctx.message.author} tried to run Charge in {ctx.guild} - #{ctx.channel} while an instance is already running.\nTimestamp: {datetime.now()}"
+            with open("logs.txt", "a+") as f:
+                f.write(f"\n{log_message}")
+            print(log_message)
             await ctx.send(content = f"A game of Charge is already running on this channel!")
         elif isinstance(error, commands.CommandInvokeError):
-            print(f"[INFO] {ctx.message.author} took to long to respond during Charge in {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}")
+            log_message = f"[INFO] {ctx.message.author} took to long to respond during Charge in {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}"
+            with open("logs.txt", "a+") as f:
+                f.write(f"\n{log_message}")
+            print(log_message)
             charge_embed = discord.Embed(
                 title = 'Charge!',
-                description = f"{ctx.message.author.display_name}, you took too long to respond!\n{ctx.guild.me.display_name} WINS! :tada:",
-                inline = False
+                description = f"{ctx.message.author.display_name}, you took too long to respond!\n{ctx.guild.me.display_name} WINS! :tada:"
             )
             charge_embed.color = 0xE74C3C # RED
             charge_embed.set_thumbnail(url = self.bot.user.avatar_url)
@@ -440,8 +457,155 @@ During a match, type `moves` to see the movelist.'''
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.author.send(content = f"Whoa {ctx.message.author.name}?! Sorry, but if you wanna fight me, do it in a server. I'd rather beat you when everyone is looking :sunglasses:")
         else:
-            print(f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}\nIgnoring exception in command {ctx.prefix}{ctx.command}:", file=sys.stderr)
-            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+            log_message = f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}\nIgnoring exception in command {ctx.prefix}{ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
+            with open("logs.txt", "a+") as f:
+                f.write(f"\n{log_message}")
+            print(log_message)
+
+    @commands.command(
+        name = 'whatmovie',
+        description = "Guess a random movie given a plot that is `$thesaurize`d!\nYou have 5 chances!\nDuring a game, start your messages with `wm<space>` when guessing.\n\nMovie data source provided by the folks who made the IMDbPY package! :grin:\nVisit them at https://imdbpy.github.io/",
+        aliases = ['wm']
+    )
+    @commands.guild_only()
+    @commands.cooldown(1, 86400, commands.BucketType.channel)
+    async def tsr_movie_command(self, ctx):
+        await ctx.channel.trigger_typing()
+
+        def similar(a, b):
+            return SequenceMatcher(None, a, b).ratio()
+
+        def check(m):
+            # Look for the message sent in the same channel where the command was used
+            # As well as by the user who used the command.
+            return m.channel == ctx.message.channel
+
+        def thesaurize(input_string):
+            tokenized_list = word_tokenize(input_string.lower())
+            thesaurized_list = []
+            for word in tokenized_list:
+                synset_list = wordnet.synsets(word)
+                thesaurized_word = word
+                try_count = 0
+                while thesaurized_word.lower() == word.lower():
+                    try_count += 1
+                    if try_count == 21:
+                        break
+                    if len(word) < 3:
+                        break
+                    if len(synset_list) > 0:
+                        usable_synset_list = []
+                        for synset in synset_list:
+                            if len(synset.lemmas()) > 1:
+                                usable_synset_list.append(synset)
+                        if len(usable_synset_list) > 0:
+                            thesaurized_word = random.choice(random.choice(usable_synset_list).lemmas()).name()
+                        else:
+                            break
+                    else:
+                        break
+                thesaurized_list.append(thesaurized_word)
+            return TreebankWordDetokenizer().detokenize(thesaurized_list)
+
+        load_message = await ctx.send(content = "Getting a random top movie...")
+        await ctx.channel.trigger_typing()
+        random_movie = top[random.randrange(0,len(top)+1)]
+        movie = ia.get_movie(random_movie.movieID)
+        movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
+        thesaurized_plot = thesaurize(movie_plot)
+
+        lives = 5
+        lives_string = 'lives'
+        wm_embed = discord.Embed(
+            title = 'What movie is this?',
+            description = f"You have **{lives}** {lives_string}\n\n__**Plot**__\n{thesaurized_plot}",
+            color = 0x7289DA # BLURPLE
+        ).add_field(
+            name = '\u200b',
+            value = ":warning: Remember to START your message with `wm<space>` when attempting to guess!",
+            inline = False
+        )
+        wm_message = await ctx.send(embed = wm_embed)
+        await load_message.delete()
+        guessed = 'no'
+
+        while guessed == 'no':
+            player_message = await self.bot.wait_for('message', check = check, timeout = 60)
+            if player_message.content[:3] == 'wm ':
+                await ctx.channel.trigger_typing()
+                if similar(movie['title'], player_message.content) < 0.7:
+                    lives -= 1
+                    if lives == 1:
+                        lives_string = 'life'
+                    elif lives == 0:
+                        break
+                    await wm_message.delete()
+                    wm_embed = discord.Embed(
+                        title = 'What movie is this?',
+                        description = f":x:\n{player_message.author.display_name} was wrong!\nYou have **{lives}** {lives_string} left!\n\n__**Plot**__\n{thesaurized_plot}",
+                        color = 0x7289DA # BLURPLE
+                    ).add_field(
+                        name = '\u200b',
+                        value = ":warning: Remember to START your message with `wm<space>` when attempting to guess!",
+                        inline = False
+                    )
+                    wm_message = await ctx.send(embed = wm_embed)
+                else:
+                    guessed = 'yes'
+
+        if lives == 0:
+            wm_embed = discord.Embed(
+                title = 'What movie is this?',
+                description = f":broken_heart:\nNo more lives! Game Over.\nThe movie is: {movie['title']}",
+                color = 0xE74C3C # RED
+            )
+        elif guessed == 'yes':
+            wm_embed = discord.Embed(
+                title = 'What movie is this?',
+                description = f"{player_message.author.display_name} got it right! :tada:\nThe movie is: {movie['title']}",
+                color = 0x2ECC71 # GREEN
+            )
+            wm_embed.set_thumbnail(url = player_message.author.avatar_url)
+        else:
+            log_message = f"[ERROR] No one guessed right and lives were still above 0 during a WhatMovie in {ctx.guild} - #{ctx.channel}.\nTimestamp: {datetime.now()}"
+            with open("logs.txt", "a+") as f:
+                f.write(f"\n{log_message}")
+            print(log_message)
+            wm_embed = discord.Embed(
+                title = 'What movie is this?',
+                description = log_message
+            )
+
+        await ctx.send(embed = wm_embed)
+        ctx.command.reset_cooldown(ctx)
+
+    @tsr_movie_command.error
+    async def tsr_movie_command_handler(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            log_message = f"[INFO] {ctx.message.author} tried to run WhatMovie in {ctx.guild} - #{ctx.channel} while an instance is already running.\nTimestamp: {datetime.now()}"
+            with open("logs.txt", "a+") as f:
+                f.write(f"\n{log_message}")
+            print(log_message)
+            await ctx.send(content = f"A game of WhatMovie is already running on this channel!")
+        elif isinstance(error, commands.CommandInvokeError):
+            log_message = f"[INFO] No one responded for too long during WhatMovie in {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}"
+            with open("logs.txt", "a+") as f:
+                f.write(f"\n{log_message}\n{error}")
+            print(f"{log_message}\n{error}")
+            wm_embed = discord.Embed(
+                title = 'What movie is this?',
+                description = f"No one responded. I guess no one's interested in what the movie was. :shrug:\nGame over.",
+                color = 0xE74C3C # RED
+            )
+            await ctx.send(embed = wm_embed)
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, commands.NoPrivateMessage):
+            await ctx.author.send(content = f"This game is wayy more fun when played in a server, so I ain't just playin with you {ctx.message.author.name}.")
+        else:
+            log_message = f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}\nIgnoring exception in command {ctx.prefix}{ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
+            with open("logs.txt", "a+") as f:
+                f.write(f"\n{log_message}")
+            print(log_message)
 
 
 def setup(bot):

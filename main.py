@@ -19,10 +19,9 @@ cogs = ['cogs.basic', 'cogs.error', 'cogs.fun', 'cogs.games']
 
 @bot.event
 async def on_ready():
-    log_message = f"[INFO] Weeblord has risen!\n[INFO] {datetime.now()}"
-    f = open("logs.txt", "a")
-    f.write(f"\n\n{log_message}")
-    f.close()
+    log_message = f"[START-UP] Weeblord has risen! Timestamp: {datetime.now()}"
+    with open("logs.txt", "a+") as f:
+        f.write(f"\n\n{log_message}")
 
     print(log_message)
     # Remove the help command before loading the cogs

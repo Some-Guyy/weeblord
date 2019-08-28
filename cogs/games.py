@@ -464,7 +464,7 @@ During a match, type `moves` to see the movelist.'''
 
     @commands.command(
         name = 'whatmovie',
-        description = "Guess a random movie given a plot that is thesaurized!\nYou have 5 chances!\nDuring a game, start your messages with `wm<space>` when guessing.\n\nMovie data source is provided by the folks who made the IMDbPY package! :grin:\nVisit them at https://imdbpy.github.io/",
+        description = "Guess a random movie given a plot where half of it is thesaurized!\nYou have 5 chances!\nDuring a game, start your messages with `wm<space>` when guessing.\n\nMovie data source is provided by the folks who made the IMDbPY package! :grin:\nVisit them at https://imdbpy.github.io/",
         aliases = ['wm']
     )
     @commands.guild_only()
@@ -480,11 +480,16 @@ During a match, type `moves` to see the movelist.'''
             # As well as by the user who used the command.
             return m.channel == ctx.message.channel
 
-        def thesaurize(input_string):
+        def thesaurize_half(input_string):
             skip_words = ['who']
             tokenized_list = word_tokenize(input_string.lower())
             thesaurized_list = []
+            count = 0
             for word in tokenized_list:
+                if count % 2 == 1:
+                    count += 1
+                    thesaurized_list.append(word)
+                    continue
                 synset_list = wordnet.synsets(word)
                 thesaurized_word = word
                 try_count = 0
@@ -508,6 +513,8 @@ During a match, type `moves` to see the movelist.'''
                     else:
                         break
                 thesaurized_list.append(thesaurized_word)
+                count += 1
+
             return TreebankWordDetokenizer().detokenize(thesaurized_list)
 
         load_message = await ctx.send(content = "Hmmm which movie shall I choose? :thinking: Lemme see...")
@@ -517,7 +524,7 @@ During a match, type `moves` to see the movelist.'''
         movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
         while len(movie_plot) > 2048:
             movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
-        thesaurized_plot = thesaurize(movie_plot)
+        thesaurized_plot = thesaurize_half(movie_plot)
 
         lives = 5
         lives_string = 'lives'

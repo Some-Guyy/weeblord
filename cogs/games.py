@@ -28,7 +28,7 @@ class Games(commands.Cog):
         await ctx.channel.trigger_typing()
 
         if choice == 'none':
-            await ctx.send(content = f"To use this command, type `{ctx.prefix}{ctx.command} <choice>`\nChoices: `r/rock, p/paper, s/scissors`")
+            await ctx.send(content = f"To use this command, type `{ctx.prefix}{ctx.invoked_with} <choice>`\nChoices: `r/rock, p/paper, s/scissors`")
         else:
             def rps_sesh(player1, player2):
                 none = []
@@ -114,7 +114,7 @@ During a match, type `moves` to see the movelist.'''
 
         def print_error(error_message):
             log_message = f"[ERROR] {error_message}\nTimestamp: {datetime.now()}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord.log", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
 
@@ -437,13 +437,13 @@ During a match, type `moves` to see the movelist.'''
     async def charge_command_handler(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             log_message = f"[INFO] {ctx.message.author} tried to run Charge in {ctx.guild} - #{ctx.channel} while an instance is already running.\nTimestamp: {datetime.now()}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord.log", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
             await ctx.send(content = f"A game of Charge is already running on this channel!")
         elif isinstance(error, commands.CommandInvokeError):
             log_message = f"[INFO] {ctx.message.author} took to long to respond during Charge in {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord.log", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
             charge_embed = discord.Embed(
@@ -458,13 +458,13 @@ During a match, type `moves` to see the movelist.'''
             await ctx.author.send(content = f"Whoa {ctx.message.author.name}?! Sorry, but if you wanna fight me, do it in a server. I'd rather beat you when everyone is looking :sunglasses:")
         else:
             log_message = f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}\nIgnoring exception in command {ctx.prefix}{ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord.log", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
 
     @commands.command(
         name = 'whatmovie',
-        description = "Guess a random movie given a plot that is `$thesaurize`d!\nYou have 5 chances!\nDuring a game, start your messages with `wm<space>` when guessing.\n\nMovie data source provided by the folks who made the IMDbPY package! :grin:\nVisit them at https://imdbpy.github.io/",
+        description = "Guess a random movie given a plot that is thesaurized!\nYou have 5 chances!\nDuring a game, start your messages with `wm<space>` when guessing.\n\nMovie data source is provided by the folks who made the IMDbPY package! :grin:\nVisit them at https://imdbpy.github.io/",
         aliases = ['wm']
     )
     @commands.guild_only()
@@ -536,7 +536,7 @@ During a match, type `moves` to see the movelist.'''
 
         while guessed == 'no':
             player_message = await self.bot.wait_for('message', check = check, timeout = 60)
-            if player_message.content[:3] == 'wm ':
+            if player_message.content[:3].lower() == 'wm ':
                 await ctx.channel.trigger_typing()
                 if similar(movie['title'], player_message.content) < 0.7:
                     lives -= 1
@@ -577,7 +577,7 @@ During a match, type `moves` to see the movelist.'''
                 wm_embed.set_image(url = movie['cover url'])
         else:
             log_message = f"[ERROR] No one guessed right and lives were still above 0 during a WhatMovie in {ctx.guild} - #{ctx.channel}.\nTimestamp: {datetime.now()}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord.log", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
             wm_embed = discord.Embed(
@@ -592,18 +592,18 @@ During a match, type `moves` to see the movelist.'''
     async def tsr_movie_command_handler(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             log_message = f"[INFO] {ctx.message.author} tried to run WhatMovie in {ctx.guild} - #{ctx.channel} while an instance is already running.\nTimestamp: {datetime.now()}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord.log", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
             await ctx.send(content = f"A game of WhatMovie is already running on this channel!")
         elif isinstance(error, commands.CommandInvokeError):
             log_message = f"[INFO] No one responded for too long during WhatMovie in {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord.log", "a+") as f:
                 f.write(f"\n{log_message}\n{error}")
             print(f"{log_message}\n{error}")
             wm_embed = discord.Embed(
                 title = 'What movie is this?',
-                description = f"No one responded. I guess no one's interested in what the movie was. :shrug:\nGame over.",
+                description = f"No one responded. :shrug:\nGame over.",
                 color = 0xE74C3C # RED
             )
             await ctx.send(embed = wm_embed)
@@ -612,7 +612,7 @@ During a match, type `moves` to see the movelist.'''
             await ctx.author.send(content = f"This game is wayy more fun when played in a server, so I ain't just playin with you {ctx.message.author.name}.")
         else:
             log_message = f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}\nIgnoring exception in command {ctx.prefix}{ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
-            with open("../logs/weeblord.txt", "a+") as f:
+            with open("../logs/weeblord.log", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
 

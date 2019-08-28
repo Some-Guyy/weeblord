@@ -20,7 +20,7 @@ cogs = ['cogs.basic', 'cogs.error', 'cogs.fun', 'cogs.games']
 @bot.event
 async def on_ready():
     log_message = f"[START-UP] Weeblord has risen! Timestamp: {datetime.now()}"
-    with open("../logs/weeblord.txt", "a+") as f:
+    with open("../logs/weeblord.log", "a+") as f:
         f.write(f"\n\n{log_message}")
 
     print(log_message)

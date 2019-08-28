@@ -6,7 +6,7 @@ from datetime import datetime
 import asyncio
 
 # Bot version
-version = "1.1.2"
+version = "1.1.3"
 owner_id = 268184888048484352
 owner_server_id = 275926238504419328
 
@@ -104,6 +104,7 @@ class Basic(commands.Cog):
             server = self.bot.get_guild(owner_server_id)
             owner = server.get_member(owner_id)
             await owner.send(log_message)
+            await ctx.send(content = "Feedback sent!")
 
     @commands.command(
         name = 'ping',

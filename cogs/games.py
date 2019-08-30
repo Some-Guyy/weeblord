@@ -64,7 +64,7 @@ class Games(commands.Cog):
             options = ['rock', 'paper', 'scissors']
             option_emoji = [':new_moon:', ':newspaper:', ':scissors:'] # For discord emoji
             if choice.lower() not in option_aliases and choice.lower() not in options:
-                await ctx.send(content = f"Wrong command bro, what the heck is {ctx.message.author}?")
+                await ctx.send(content = f"Wrong command bro, what the heck is {choice}?")
                 return
             elif choice.lower() in option_aliases:
                 player = (ctx.message.author.display_name, options[option_aliases.index(choice.lower())])
@@ -543,7 +543,9 @@ During a match, type `moves` to see the movelist.'''
 
         while guessed == 'no':
             player_message = await self.bot.wait_for('message', check = check, timeout = 60)
-            if player_message.content[:3].lower() == 'wm ':
+            if player_message.content.lower() == 'skip':
+                guessed = 'skip'
+            elif player_message.content[:3].lower() == 'wm ':
                 await ctx.channel.trigger_typing()
                 if similar(movie['title'], player_message.content[3:]) < 0.7:
                     lives -= 1
@@ -565,7 +567,15 @@ During a match, type `moves` to see the movelist.'''
                 else:
                     guessed = 'yes'
 
-        if lives == 0:
+        if guessed == 'skip':
+            wm_embed = discord.Embed(
+                title = 'What movie is this?',
+                description = f":no_entry_sign:\nSkipped! Game Over.\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{random_movie.movieID}",
+                color = 0xE74C3C # RED
+            )
+            if movie['cover url'] is not None:
+                wm_embed.set_image(url = movie['cover url'])
+        elif lives == 0:
             wm_embed = discord.Embed(
                 title = 'What movie is this?',
                 description = f":broken_heart:\nNo more lives! Game Over.\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{random_movie.movieID}",

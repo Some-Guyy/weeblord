@@ -545,7 +545,7 @@ During a match, type `moves` to see the movelist.'''
             player_message = await self.bot.wait_for('message', check = check, timeout = 60)
             if player_message.content[:3].lower() == 'wm ':
                 await ctx.channel.trigger_typing()
-                if similar(movie['title'], player_message.content) < 0.7:
+                if similar(movie['title'], player_message.content[3:]) < 0.7:
                     lives -= 1
                     if lives == 1:
                         lives_string = 'life'

@@ -163,7 +163,7 @@ class Fun(commands.Cog):
                 icon_url = message.author.avatar_url
             )
             await ctx.send(embed = tsr_embed)
-            time.sleep(1)
+            await asyncio.sleep(1)
 
 
 def setup(bot):

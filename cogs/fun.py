@@ -6,7 +6,7 @@ import random
 from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
-from time import time
+import asyncio
 
 class Fun(commands.Cog):
     def __init__(self, bot):

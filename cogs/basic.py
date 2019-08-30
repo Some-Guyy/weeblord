@@ -6,7 +6,7 @@ from datetime import datetime
 import asyncio
 
 # Bot version
-version = "1.1.14"
+version = "1.1.15"
 owner_id = 268184888048484352
 owner_server_id = 275926238504419328
 
@@ -119,7 +119,7 @@ class Basic(commands.Cog):
         # Sends a message to the user in the channel the message with the command was received.
         # Notifies the user that pinging has started
 
-        await msg.edit(content=f"Pong! `{round((datetime.timestamp(datetime.now()) - start) * 1000)}ms`")
+        await msg.edit(content=f":ping_pong: Pong! `{round((datetime.timestamp(datetime.now()) - start) * 1000)}ms`")
         # Ping completed and round-trip duration show in ms
         # Since it takes a while to send the messages
         # it will calculate how much time it takes to edit an message.

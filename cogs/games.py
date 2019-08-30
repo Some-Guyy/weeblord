@@ -7,13 +7,13 @@ import random
 import asyncio
 import traceback
 
-import imdb
-ia = imdb.IMDb()
-top = ia.get_top250_movies()
 from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 from difflib import SequenceMatcher
+import imdb
+ia = imdb.IMDb()
+top = ia.get_top250_movies()
 
 class Games(commands.Cog):
     def __init__(self, bot):
@@ -562,7 +562,7 @@ During a match, type `moves` to see the movelist. Start a move with the message 
         guessed = 'no'
 
         while guessed == 'no':
-            player_message = await self.bot.wait_for('message', check = check, timeout = 60)
+            player_message = await self.bot.wait_for('message', check = check, timeout = 120)
             if player_message.content.lower() == 'skip':
                 guessed = 'skip'
             elif player_message.content[:3].lower() == 'wm ':

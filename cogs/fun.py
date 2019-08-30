@@ -115,7 +115,7 @@ class Fun(commands.Cog):
         aliases = ['tsrl']
     )
     @commands.guild_only()
-    async def thesaurize_command(self, ctx):
+    async def thesaurize_command(self, ctx, times = 5):
         await ctx.channel.trigger_typing()
 
         def thesaurize(input_string):
@@ -152,7 +152,7 @@ class Fun(commands.Cog):
         message = messages[1]
         text = message.content
 
-        for i in range(5):
+        for i in range(times):
             tsr_embed = discord.Embed(
                 description = thesaurize(text),
                 color = 0x11806A # DARK_AQUA
@@ -162,6 +162,7 @@ class Fun(commands.Cog):
                 icon_url = message.author.avatar_url
             )
             await ctx.send(embed = tsr_embed)
+            time.sleep(1)
 
 
 def setup(bot):

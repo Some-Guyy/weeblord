@@ -6,7 +6,7 @@ from datetime import datetime
 import asyncio
 
 # Bot version
-version = "1.1.13"
+version = "1.1.14"
 owner_id = 268184888048484352
 owner_server_id = 275926238504419328
 
@@ -19,7 +19,7 @@ class Basic(commands.Cog):
     @commands.command(
         name = 'help',
         description = "Ay dood what do you think this command is for?",
-        aliases = ['h', 'commands', 'command']
+        aliases = ['h']
     )
     @commands.guild_only()
     async def help_command(self, ctx, command = 'all'):
@@ -86,7 +86,7 @@ class Basic(commands.Cog):
                         return
 
         # Notify the user of invalid command and finish the command
-        await ctx.send('Invalid command specified.\nUse `help` command to list all command.')
+        await ctx.send(content = f"Invalid command specified.\nUse `{ctx.prefix}{ctx.invoked_with}` to list all commands.")
 
     @commands.command(
         name = 'feedback',

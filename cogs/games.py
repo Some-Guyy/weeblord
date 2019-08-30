@@ -96,7 +96,7 @@ class Games(commands.Cog):
         name = 'charge',
         description = '''Challenge me to a battle of wits and resources until one of us loses!
 The main feature of this game is mana. Moves you can perform will have different mana costs.
-During a match, type `moves` to see the movelist.'''
+During a match, type `moves` to see the movelist. Start a move with the message `c<space>`.'''
     )
     @commands.guild_only()
     @commands.cooldown(1, 86400, commands.BucketType.channel)
@@ -109,7 +109,8 @@ During a match, type `moves` to see the movelist.'''
                 'bom': {'cost': 1, 'status': 'attack', 'stylized': ':comet:Bom'},
                 'boom': {'cost': 2, 'status': 'attack', 'stylized': ':boom:Boom'},
                 'slash': {'cost': 2, 'status': 'attack', 'stylized': ':crossed_swords:Slash'},
-                'fwoosh': {'cost': 4, 'status': 'attack', 'stylized': ':wind_blowing_face:Fwoosh'}
+                'fwoosh': {'cost': 4, 'status': 'attack', 'stylized': ':wind_blowing_face:Fwoosh'},
+                'stop': {'cost': 0, 'status': 'dead', 'stylized': ':flag_white: Gave up'}
         }
 
         def print_error(error_message):
@@ -141,14 +142,14 @@ During a match, type `moves` to see the movelist.'''
                 move = 'fwoosh'
             elif player.mana == 0:
                 move = random.choice(list(move_dict))
-                while cpu.mana - move_dict[move]['cost'] < 0 or move_dict[move]['status'] == 'defence':
+                while move == 'stop' or cpu.mana - move_dict[move]['cost'] < 0 or move_dict[move]['status'] == 'defence':
                     move = random.choice(list(move_dict))
             else:
                 if random.randrange(100) < 20:
                     move = 'charge'
                 else:
                     move = random.choice(list(move_dict))
-                    while cpu.mana - move_dict[move]['cost'] < 0:
+                    while move == 'stop' or cpu.mana - move_dict[move]['cost'] < 0:
                         move = random.choice(list(move_dict))
 
             return move
@@ -196,6 +197,11 @@ During a match, type `moves` to see the movelist.'''
                     f"{winner.name} managed to survive from {loser.name}'s {loser.move} with {winner.move}!",
                     f"{winner.name} easily dealt with {loser.name}'s {loser.move} by {winner.move}ing!",
                     f"{loser.name}'s {loser.move} was rendered useless by {winner.name}'s {winner.move}!"
+                ],
+                'give_up': [
+                    f"{loser.name} {loser.move}! Easy win for {winner.name}!",
+                    f"{loser.name} {loser.move}! What a bore!",
+                    f"{winner.name} used {winner.move}! But wait! {loser.name} pulled up the white flag! :flag_white:"
                 ]
             }
             if situation in lines:
@@ -287,7 +293,7 @@ During a match, type `moves` to see the movelist.'''
         while player.status != 'dead' and cpu.status != 'dead':
             charge_embed.add_field(
                 name = '\u200b',
-                value = f"+-------------------------------+\n{player.name}'s :yin_yang:Mana: {player.mana}\n+-------------------------------+\n{cpu.name}'s :yin_yang:Mana: {cpu.mana}\n+-------------------------------+\n\nNext move?",
+                value = f"+-------------------------------+\n{player.name}'s :yin_yang:Mana: {player.mana}\n+-------------------------------+\n{cpu.name}'s :yin_yang:Mana: {cpu.mana}\n+-------------------------------+\n\n:warning:Remember to start every move with `c<space>`!\nNext move?",
                 inline = False
             )
             # Delete previous message
@@ -299,9 +305,13 @@ During a match, type `moves` to see the movelist.'''
             cpu_move = cpu_ai(player, cpu, move_dict)
 
             # Player move
-            msg = await self.bot.wait_for('message', check = check, timeout = 30)
-            await ctx.channel.trigger_typing()
-            player_move = msg.content.lower()
+            valid = 'no'
+            while valid == 'no':
+                msg = await self.bot.wait_for('message', check = check, timeout = 30)
+                if msg.content[:2].lower() == 'c ':
+                    await ctx.channel.trigger_typing()
+                    player_move = msg.content[2:].lower()
+                    valid = 'yes'
             if player_move == 'moves':
                 await ctx.send(content = '''`+--------+------+-------------------+
 | Move   | Cost | Description       |
@@ -319,6 +329,8 @@ During a match, type `moves` to see the movelist.'''
 | Slash  | 2    | Level 2 Attack    |
 +--------+------+-------------------+
 | Fwoosh | 4    | Level 4 Attack    |
++--------+------+-------------------+
+| Stop   | None | Give up!          |
 +--------+------+-------------------+`''')
                 charge_embed = discord.Embed(
                     title = 'Charge!',
@@ -351,8 +363,16 @@ During a match, type `moves` to see the movelist.'''
             )
             
             # Fight commence!
+            # Player gives up
+            if player.move == ':flag_white: Gave up':
+                charge_embed.add_field(
+                    name = '\u200b',
+                    value = announce('give_up', cpu, player),
+                    inline = False
+                )
+                player.status = 'dead'
             # Both charge
-            if player.status == cpu.status == 'restore':
+            elif player.status == cpu.status == 'restore':
                 charge_embed.add_field(
                     name = '\u200b',
                     value = announce('both_restore', player, cpu),
@@ -464,7 +484,7 @@ During a match, type `moves` to see the movelist.'''
 
     @commands.command(
         name = 'whatmovie',
-        description = "Guess a random movie given a plot where half of it is thesaurized!\nYou have 5 chances!\nDuring a game, start your messages with `wm<space>` when guessing.\n\nMovie data source is provided by the folks who made the IMDbPY package! :grin:\nVisit them at https://imdbpy.github.io/",
+        description = "Guess a random movie given a plot where half of it is thesaurized!\nYou have 5 chances!\nDuring a game, start your messages with `wm<space>` when guessing. Or use `skip` to give up.\n\nMovie data source is provided by the folks who made the IMDbPY package! :grin:\nVisit them at https://imdbpy.github.io/",
         aliases = ['wm']
     )
     @commands.guild_only()
@@ -534,7 +554,7 @@ During a match, type `moves` to see the movelist.'''
             color = 0x7289DA # BLURPLE
         ).add_field(
             name = '\u200b',
-            value = ":warning: Remember to START your message with `wm<space>` when attempting to guess!",
+            value = ":warning: Remember to START your message with `wm<space>` when attempting to guess! Use `skip` to give up.",
             inline = False
         )
         wm_message = await ctx.send(embed = wm_embed)
@@ -560,7 +580,7 @@ During a match, type `moves` to see the movelist.'''
                         color = 0x7289DA # BLURPLE
                     ).add_field(
                         name = '\u200b',
-                        value = ":warning: Remember to START your message with `wm<space>` when attempting to guess!",
+                        value = ":warning: Remember to START your message with `wm<space>` when attempting to guess! Use `skip` to give up.",
                         inline = False
                     )
                     wm_message = await ctx.send(embed = wm_embed)

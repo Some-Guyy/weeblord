@@ -59,7 +59,7 @@ class Fun(commands.Cog):
 
     @commands.command(
         name = 'thesaurize',
-        description = "Replace every word from the previous message into another word with a similar meaning. *(hopefully)*\nYou can also add a number `(2-5)` after the command to re-thesaurize the output!",
+        description = "Replace every word from the previous message into another word with a similar meaning. *(hopefully)*\nYou can also add a number `(2-5)` after the command to re-thesaurize the output that many times!",
         aliases = ['tsr']
     )
     @commands.guild_only()

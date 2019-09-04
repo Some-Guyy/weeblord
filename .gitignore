@@ -2,5 +2,9 @@
 .vscode
 
 #Python Cache
-__pycache__
-cogs/__pycache__
+*.py[cod]
+__pycache__/
+
+#Others
+Thumbs.db
+.DS_Store

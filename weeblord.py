@@ -22,14 +22,20 @@ async def on_ready():
     log_message = f"[START-UP] Weeblord has risen! Timestamp: {datetime.now()}"
     with open("../logs/weeblord.log", "a+") as f:
         f.write(f"\n\n{log_message}")
-
     print(log_message)
+
     # Remove the help command before loading the cogs
     bot.remove_command('help')
     for cog in cogs:
-        bot.load_extension(cog)
+        try:
+            bot.load_extension(cog)
+        except commands.errors.ExtensionAlreadyLoaded:
+            log_message = f"[INFO] Extension {cog} tried to load but is already loaded. This may be due to reconnection.\nTimestamp: {datetime.now()}"
+            with open("../logs/weeblord.log", "a+") as f:
+                f.write(f"\n\n{log_message}")
+            print(log_message)
+
     await bot.change_presence(activity = discord.Game("( ͡° ͜ʖ ͡°) | $help"))
-    return
 
 bot.run(token, bot = True, reconnect = True)
 

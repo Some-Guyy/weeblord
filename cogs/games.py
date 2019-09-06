@@ -547,13 +547,14 @@ During a match, type `moves` to see the movelist. Start a move with the message 
                 movie_id = random_movie.movieID
                 movie = ia.get_movie(movie_id)
             else:
-                movie_id = random.choice(moviez[category]['id'])
-                movie = ia.get_movie(movie_id[2:])
+                full_movie_id = random.choice(moviez[category]['id'])
+                movie_id = full_movie_id[2:]
+                movie = ia.get_movie(movie_id)
 
             movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
 
             # Prevent error where embed.description hits over 2048 characters
-            while len(movie_plot) > 2026:
+            while len(movie_plot) > 2000:
                 movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
             thesaurized_plot = thesaurize(movie_plot)
 

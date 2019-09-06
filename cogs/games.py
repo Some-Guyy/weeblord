@@ -11,6 +11,8 @@ from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 from difflib import SequenceMatcher
+
+from toolbox import moviez
 import imdb
 ia = imdb.IMDb()
 top = ia.get_top250_movies()
@@ -484,12 +486,12 @@ During a match, type `moves` to see the movelist. Start a move with the message 
 
     @commands.command(
         name = 'whatmovie',
-        description = "Guess a random movie given a plot where half of it is thesaurized!\nYou have 5 chances!\nDuring a game, start your messages with `wm<space>` when guessing.\n\nMovie data source is provided by the folks who made the IMDbPY package! :grin:\nVisit them at https://imdbpy.github.io/",
+        description = "Guess a random movie given a thesaurized plot!\nYou have 5 chances!\nYou may also choose a category by adding the category name after the command.\nCategories:\n`top` - (default) top 250 movies\n`marvel`\n\nDuring a game, start your messages with `wm<space>` when guessing.\n\nMovie data source is provided by the folks who made the IMDbPY package! :grin:\nVisit them at https://imdbpy.github.io/",
         aliases = ['wm']
     )
     @commands.guild_only()
     @commands.cooldown(1, 86400, commands.BucketType.channel)
-    async def tsr_movie_command(self, ctx):
+    async def tsr_movie_command(self, ctx, category = 'top'):
         while True:
             await ctx.channel.trigger_typing()
 
@@ -501,16 +503,11 @@ During a match, type `moves` to see the movelist. Start a move with the message 
                 # As well as by the user who used the command.
                 return m.channel == ctx.message.channel
 
-            def thesaurize_half(input_string):
+            def thesaurize(input_string):
                 skip_words = ['who']
                 tokenized_list = word_tokenize(input_string.lower())
                 thesaurized_list = []
-                count = 0
                 for word in tokenized_list:
-                    if count % 2 == 1:
-                        count += 1
-                        thesaurized_list.append(word)
-                        continue
                     synset_list = wordnet.synsets(word)
                     thesaurized_word = word
                     try_count = 0
@@ -534,22 +531,33 @@ During a match, type `moves` to see the movelist. Start a move with the message 
                         else:
                             break
                     thesaurized_list.append(thesaurized_word)
-                    count += 1
 
                 return TreebankWordDetokenizer().detokenize(thesaurized_list)
 
             load_message = await ctx.send(content = "Hmmm which movie shall I choose? :thinking: Lemme see...")
             await ctx.channel.trigger_typing()
-            random_movie = top[random.randrange(0,len(top)+1)]
-            movie = ia.get_movie(random_movie.movieID)
+
+            category = category.lower()
+            if category not in moviez:
+                await ctx.send(content = f"We don't have `{category}`.\nCategory list:\n`top` - (default) top 250 movies\n`marvel`")
+                ctx.command.reset_cooldown(ctx)
+                break
+            elif category == 'top':
+                random_movie = top[random.randrange(0,len(top)+1)]
+                movie_id = random_movie.movieID
+                movie = ia.get_movie(movie_id)
+            else:
+                movie_id = random.choice(moviez[category]['id'])
+                movie = ia.get_movie(movie_id[2:])
+
             movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
 
             # Prevent error where embed.description hits over 2048 characters
             while len(movie_plot) > 2026:
                 movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
-            thesaurized_plot = thesaurize_half(movie_plot)
+            thesaurized_plot = thesaurize(movie_plot)
 
-            lives = 5
+            lives = moviez[category]['lives']
             lives_string = 'lives'
             wm_embed = discord.Embed(
                 title = 'What movie is this?',
@@ -595,7 +603,7 @@ During a match, type `moves` to see the movelist. Start a move with the message 
             if guessed == 'skip':
                 wm_embed = discord.Embed(
                     title = 'What movie is this?',
-                    description = f":no_entry_sign:\nSkipped! Game Over.\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{random_movie.movieID}",
+                    description = f":no_entry_sign:\nSkipped! Game Over.\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{movie_id}",
                     color = 0xE74C3C # RED
                 )
                 if movie['cover url'] is not None:
@@ -605,7 +613,7 @@ During a match, type `moves` to see the movelist. Start a move with the message 
             elif guessed == 'stop':
                 wm_embed = discord.Embed(
                     title = 'What movie is this?',
-                    description = f":no_entry_sign:\nGave up! Game Over.\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{random_movie.movieID}",
+                    description = f":no_entry_sign:\nGave up! Game Over.\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{movie_id}",
                     color = 0xE74C3C # RED
                 )
                 if movie['cover url'] is not None:
@@ -613,7 +621,7 @@ During a match, type `moves` to see the movelist. Start a move with the message 
             elif lives == 0:
                 wm_embed = discord.Embed(
                     title = 'What movie is this?',
-                    description = f":broken_heart:\nNo more lives! Game Over.\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{random_movie.movieID}",
+                    description = f":broken_heart:\nNo more lives! Game Over.\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{movie_id}",
                     color = 0xE74C3C # RED
                 )
                 if movie['cover url'] is not None:
@@ -621,7 +629,7 @@ During a match, type `moves` to see the movelist. Start a move with the message 
             elif guessed == 'yes':
                 wm_embed = discord.Embed(
                     title = 'What movie is this?',
-                    description = f"{player_message.author.display_name} got it right! :tada:\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{random_movie.movieID}",
+                    description = f"{player_message.author.display_name} got it right! :tada:\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{movie_id}",
                     color = 0x2ECC71 # GREEN
                 )
                 wm_embed.set_thumbnail(url = player_message.author.avatar_url)

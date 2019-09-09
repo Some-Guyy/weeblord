@@ -562,7 +562,7 @@ During a match, type `moves` to see the movelist. Start a move with the message 
             lives_string = 'lives'
             wm_embed = discord.Embed(
                 title = 'What movie is this?',
-                description = f"You have **{lives}** {lives_string}\n\n__**Plot**__\n{thesaurized_plot}",
+                description = f"You have **{lives}** {lives_string}\nCategory: {category}\n\n__**Plot**__\n{thesaurized_plot}",
                 color = 0x7289DA # BLURPLE
             ).add_field(
                 name = '\u200b',
@@ -590,7 +590,7 @@ During a match, type `moves` to see the movelist. Start a move with the message 
                         await wm_message.delete()
                         wm_embed = discord.Embed(
                             title = 'What movie is this?',
-                            description = f":x:\n{player_message.author.display_name} was wrong!\nYou have **{lives}** {lives_string} left!\n\n__**Plot**__\n{thesaurized_plot}",
+                            description = f":x:\n{player_message.author.display_name} was wrong!\nYou have **{lives}** {lives_string} left!\nCategory: {category}\n\n__**Plot**__\n{thesaurized_plot}",
                             color = 0x7289DA # BLURPLE
                         ).add_field(
                             name = '\u200b',

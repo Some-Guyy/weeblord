@@ -3,6 +3,7 @@ from discord.ext import commands
 import sys
 
 import pickle
+import pytz
 from datetime import datetime
 
 f = open('../token/weeblord', 'rb')
@@ -19,7 +20,7 @@ cogs = ['cogs.basic', 'cogs.error', 'cogs.fun', 'cogs.games']
 
 @bot.event
 async def on_ready():
-    log_message = f"[START-UP] Weeblord has risen! Timestamp: {datetime.now()}"
+    log_message = f"[START-UP] Weeblord has risen! Timestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}"
     with open("../logs/weeblord.log", "a+") as f:
         f.write(f"\n\n{log_message}")
     print(log_message)
@@ -30,7 +31,7 @@ async def on_ready():
         try:
             bot.load_extension(cog)
         except commands.errors.ExtensionAlreadyLoaded:
-            log_message = f"[INFO] Extension {cog} tried to load but is already loaded. This may be due to reconnection.\nTimestamp: {datetime.now()}"
+            log_message = f"[INFO] Extension {cog} tried to load but is already loaded. This may be due to reconnection.\nTimestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}"
             with open("../logs/weeblord.log", "a+") as f:
                 f.write(f"\n\n{log_message}")
             print(log_message)

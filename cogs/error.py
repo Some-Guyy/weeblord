@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import sys
 
+import pytz
 from datetime import datetime
 import traceback
 
@@ -46,7 +47,7 @@ class Error(commands.Cog):
                 return await ctx.send("I couldn't find whoever that is. Are you sure they even exist?")
 
         # All other Errors not returned come here... And we can just print the default TraceBack.
-        log_message = f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}\nIgnoring exception in command {ctx.prefix}{ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
+        log_message = f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}\nIgnoring exception in command {ctx.prefix}{ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
         with open("../logs/weeblord.log", "a+") as f:
             f.write(f"\n{log_message}")
         print(log_message)

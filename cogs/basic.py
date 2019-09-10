@@ -2,11 +2,12 @@ import discord
 from discord.ext import commands
 import sys
 
+import pytz
 from datetime import datetime
 import asyncio
 
 # Bot version
-version = "1.1.21"
+version = "1.1.22"
 owner_id = 268184888048484352
 owner_server_id = 275926238504419328
 
@@ -97,7 +98,7 @@ class Basic(commands.Cog):
         if feedback == 'none':
             await ctx.send(content = f"To provide feedback, use `{ctx.prefix}{ctx.invoked_with} <feedback>` on a server or through a private message.")
         else:
-            log_message = f"[FEEDBACK] By {ctx.message.author} in server {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now()}\nFeedback: {feedback}"
+            log_message = f"[FEEDBACK] By {ctx.message.author} in server {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}\nFeedback: {feedback}"
             with open("../logs/weeblord.log", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
@@ -112,14 +113,14 @@ class Basic(commands.Cog):
         aliases = ['p']
     )
     async def ping_command(self, ctx):
-        start = datetime.timestamp(datetime.now())
+        start = datetime.timestamp(datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore')))
         # Gets the timestamp when the command was used
 
         msg = await ctx.send(content="Pong!")
         # Sends a message to the user in the channel the message with the command was received.
         # Notifies the user that pinging has started
 
-        await msg.edit(content=f":ping_pong: Pong! `{round((datetime.timestamp(datetime.now()) - start) * 1000)}ms`")
+        await msg.edit(content=f":ping_pong: Pong! `{round((datetime.timestamp(datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))) - start) * 1000)}ms`")
         # Ping completed and round-trip duration show in ms
         # Since it takes a while to send the messages
         # it will calculate how much time it takes to edit an message.

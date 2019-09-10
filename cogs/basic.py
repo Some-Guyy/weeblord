@@ -3,11 +3,11 @@ from discord.ext import commands
 import sys
 
 import pytz
-from datetime import datetime
+from datetime import datetime, timezone
 import asyncio
 
 # Bot version
-version = "1.1.22"
+version = "1.1.23"
 owner_id = 268184888048484352
 owner_server_id = 275926238504419328
 

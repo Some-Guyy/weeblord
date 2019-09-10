@@ -4,7 +4,7 @@ import sys
 
 import pickle
 import pytz
-from datetime import datetime
+from datetime import datetime, timezone
 
 f = open('../token/weeblord', 'rb')
 token = pickle.load(f)

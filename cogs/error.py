@@ -3,7 +3,7 @@ from discord.ext import commands
 import sys
 
 import pytz
-from datetime import datetime
+from datetime import datetime, timezone
 import traceback
 
 # New - The Cog class must extend the commands.Cog class

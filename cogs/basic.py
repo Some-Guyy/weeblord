@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 import asyncio
 
 # Bot version
-version = "1.1.23"
+version = "1.1.24"
 owner_id = 268184888048484352
 owner_server_id = 275926238504419328
 
@@ -99,7 +99,7 @@ class Basic(commands.Cog):
             await ctx.send(content = f"To provide feedback, use `{ctx.prefix}{ctx.invoked_with} <feedback>` on a server or through a private message.")
         else:
             log_message = f"[FEEDBACK] By {ctx.message.author} in server {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}\nFeedback: {feedback}"
-            with open("../logs/weeblord.log", "a+") as f:
+            with open("./logs/weeblord.log", "a+") as f:
                 f.write(f"\n{log_message}")
             print(log_message)
             server = self.bot.get_guild(owner_server_id)

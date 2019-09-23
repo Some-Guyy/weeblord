@@ -48,7 +48,7 @@ class Error(commands.Cog):
 
         # All other Errors not returned come here... And we can just print the default TraceBack.
         log_message = f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}\nIgnoring exception in command {ctx.prefix}{ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
-        with open("../logs/weeblord.log", "a+") as f:
+        with open("./logs/weeblord.log", "a+") as f:
             f.write(f"\n{log_message}")
         print(log_message)
 

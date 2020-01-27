@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 import asyncio
 
 # Bot version
-version = "1.1.24"
+version = "1.1.25"
 owner_id = 268184888048484352
 owner_server_id = 275926238504419328
 

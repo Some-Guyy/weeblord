@@ -99,7 +99,7 @@ class Games(commands.Cog):
         name = 'charge',
         description = '''Challenge me to a battle of wits and resources until one of us loses!
 The main feature of this game is mana. Moves you can perform will have different mana costs.
-During a match, type `moves` to see the movelist. Start a move with the message `c<space>`.'''
+During a match, type `c<space>moves` to see the movelist. Start a move with the message `c<space>`.'''
     )
     @commands.guild_only()
     @commands.cooldown(1, 86400, commands.BucketType.channel)
@@ -344,7 +344,7 @@ During a match, type `moves` to see the movelist. Start a move with the message 
             elif player_move not in move_dict:
                 charge_embed = discord.Embed(
                     title = 'Charge!',
-                    description = f"What kind of move is {player_move}?!\nType `moves` to see the movelist.",
+                    description = f"What kind of move is {player_move}?!\nType `c<space>moves` to see the movelist.",
                     color = 0x3498DB
                 )
                 continue

@@ -3,7 +3,7 @@
 
 A simple discord bot with the usual normal commands. Being a weeblord, the main goal of developing this bot was to include anime-related commands. Therefore, the next step planned is to consume [MAL](https://myanimelist.net/)'s public [API](https://myanimelist.net/forum/?topicid=1804432) when its development is completed and make some simple games with it. [Invite him to your server!](https://discordapp.com/api/oauth2/authorize?client_id=614361547162255381&permissions=0&scope=bot)
 
-*Note that this bot requires NLTK's Treebank Word package. Download it via:* ```nltk.download("treebank")```
+*Note that this bot requires NLTK's Treebank, Punkt, and Wordnet packages. Download them via:* ```nltk.download("<package name>")```
 
 ### Commands (as of v1.1.24)
 **Basic**

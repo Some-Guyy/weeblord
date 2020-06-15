@@ -10,8 +10,10 @@ f = open('./token/weeblord', 'rb')
 token = pickle.load(f)
 f.close()
 
+prefix = '$'
+
 bot = commands.Bot(
-    command_prefix = '$',
+    command_prefix = prefix,
     description = 'The lord of weebs.',
     case_insensitive = True
 )
@@ -36,7 +38,7 @@ async def on_ready():
                 f.write(f"\n\n{log_message}")
             print(log_message)
 
-    await bot.change_presence(activity = discord.Game("( ͡° ͜ʖ ͡°) | $help"))
+    await bot.change_presence(activity = discord.Game(f"( ͡° ͜ʖ ͡°) | {prefix}help"))
 
 bot.run(token, bot = True, reconnect = True)
 

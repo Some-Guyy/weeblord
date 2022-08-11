@@ -90,24 +90,6 @@ class Basic(commands.Cog):
         await ctx.send(content = f"Invalid command specified.\nUse `{ctx.prefix}{ctx.invoked_with}` to list all commands.")
 
     @commands.command(
-        name = 'feedback',
-        description = f"This is where I accept all kinds of feedback. Just type your feedback after this command and send it on a server or even through a private message. I will direct your feedback to my creator.",
-        aliases = ['fb']
-    )
-    async def feedback_command(self, ctx, feedback = 'none'):
-        if feedback == 'none':
-            await ctx.send(content = f"To provide feedback, use `{ctx.prefix}{ctx.invoked_with} <feedback>` on a server or through a private message.")
-        else:
-            log_message = f"[FEEDBACK] By {ctx.message.author} in server {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}\nFeedback: {feedback}"
-            with open("./logs/weeblord.log", "a") as f:
-                f.write(f"\n{log_message}")
-            print(log_message)
-            server = self.bot.get_guild(owner_server_id)
-            owner = server.get_member(owner_id)
-            await owner.send(log_message)
-            await ctx.send(content = "Feedback sent!")
-
-    @commands.command(
         name = 'ping',
         description = "To check if I'm still alive.",
         aliases = ['p']

@@ -8,9 +8,7 @@ __pycache__/
 #Others
 Thumbs.db
 .DS_Store
+.env
 
 #Logging
 logs/
-
-#Token
-token/

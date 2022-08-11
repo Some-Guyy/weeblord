@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+import os
 import pytz
 from datetime import datetime, timezone
 
@@ -21,6 +22,8 @@ cogs = ['cogs.basic', 'cogs.error', 'cogs.fun', 'cogs.games']
 @bot.event
 async def on_ready():
     log_message = f"[START-UP] Weeblord has risen! Timestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}"
+    if not os.path.exists("./logs"):
+        os.makedirs("./logs")
     with open("./logs/weeblord.log", "a") as f:
         f.write(f"\n\n{log_message}")
     print(log_message)

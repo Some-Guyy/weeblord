@@ -38,7 +38,7 @@ class Error(commands.Cog):
             return await ctx.author.send(f"Sorry {ctx.message.author.name}, I can only do this in a server.")
         
         elif isinstance(error, commands.PrivateMessageOnly):
-            return await ctx.author.send(f"*Hush hush! PM me about it...*")
+            return await ctx.author.send(f"*PM me about it...*")
 
         # For this error example we check to see where it came from...
         elif isinstance(error, commands.BadArgument):

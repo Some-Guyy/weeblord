@@ -5,7 +5,7 @@ import os
 import pytz
 from datetime import datetime, timezone
 
-f = open('./token/weeblord-beta.txt', 'r')
+f = open('./token.txt', 'r')
 token = f.read()
 f.close()
 

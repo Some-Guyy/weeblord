@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-import sys
 
 import pytz
 from datetime import datetime, timezone

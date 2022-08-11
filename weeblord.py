@@ -1,9 +1,15 @@
 import discord
 from discord.ext import commands
 
+import nltk
 import os
 import pytz
 from datetime import datetime, timezone
+
+nltk.download('treebank')
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
 
 f = open('./token.txt', 'r')
 token = f.read()

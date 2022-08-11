@@ -7,8 +7,6 @@ import asyncio
 
 # Bot version
 version = "1.1.25"
-owner_id = 268184888048484352
-owner_server_id = 275926238504419328
 
 # New - The Cog class must extend the commands.Cog class
 class Basic(commands.Cog):
@@ -21,7 +19,6 @@ class Basic(commands.Cog):
         description = "Ay dood what do you think this command is for?",
         aliases = ['h']
     )
-    @commands.guild_only()
     async def help_command(self, ctx, command = 'all'):
         # Show that the bot is typing until a message is sent
         await ctx.channel.trigger_typing()

@@ -35,7 +35,7 @@ class Error(commands.Cog):
             return await ctx.send(f"`{ctx.prefix}{ctx.command}` has been disabled.")
 
         elif isinstance(error, commands.NoPrivateMessage):
-            return await ctx.author.send(f"Hmmm {ctx.message.author.name}? ...nope, don't remember you at all. Sorry, I don't speak to strangers.")
+            return await ctx.author.send(f"Sorry {ctx.message.author.name}, I can only do this in a server.")
         
         elif isinstance(error, commands.PrivateMessageOnly):
             return await ctx.author.send(f"*Hush hush! PM me about it...*")

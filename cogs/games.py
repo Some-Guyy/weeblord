@@ -477,7 +477,7 @@ During a match, type `c<space>moves` to see the movelist. Start a move with the 
             await ctx.send(embed = charge_embed)
             ctx.command.reset_cooldown(ctx)
         elif isinstance(error, commands.NoPrivateMessage):
-            await ctx.author.send(content = f"Whoa {ctx.message.author.name}?! Sorry, but if you wanna fight me, do it in a server. I'd rather beat you when everyone is looking :sunglasses:")
+            await ctx.author.send(content = f"Sorry {ctx.message.author.name}, I'll only play this in a server.")
         else:
             log_message = f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}\nIgnoring exception in command {ctx.prefix}{ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
             with open("./logs/weeblord.log", "a") as f:
@@ -671,7 +671,7 @@ During a match, type `c<space>moves` to see the movelist. Start a move with the 
             await ctx.send(embed = wm_embed)
             ctx.command.reset_cooldown(ctx)
         elif isinstance(error, commands.NoPrivateMessage):
-            await ctx.author.send(content = f"This game is wayy more fun when played in a server, so I ain't just playin with you {ctx.message.author.name}.")
+            await ctx.author.send(content = f"Sorry {ctx.message.author.name}, I'll only play this in a server.")
         else:
             log_message = f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}\nIgnoring exception in command {ctx.prefix}{ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
             with open("./logs/weeblord.log", "a") as f:

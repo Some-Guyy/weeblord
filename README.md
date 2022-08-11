@@ -5,10 +5,9 @@ A simple discord bot with the usual normal commands. Being a weeblord, the main 
 
 *Note that this bot requires NLTK's Treebank, Punkt, and Wordnet packages. Download them via:* ```nltk.download("<package name>")```
 
-### Commands (as of v1.1.24)
+### Commands (as of v1.2.0)
 **Basic**
 - help
-- feedback
 - ping
 - roll
 

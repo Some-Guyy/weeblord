@@ -117,7 +117,6 @@ class Basic(commands.Cog):
         description = "The basic roll command. Every discord bot should have this, right? Choose a number and I'll roll a random number up to your chosen one.",
         aliases = ['r']
     )
-    @commands.guild_only()
     async def roll_command(self, ctx, roll_amount = 'none'):
         await ctx.channel.trigger_typing()
 

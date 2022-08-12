@@ -16,7 +16,6 @@ class Fun(commands.Cog):
         usage = ' "<message>"',
         description = "Uwu-ify a message, MAKE SURE the message is enclosed in quotations (\").\nIf no message is included in the command, I will just uwu-ify the last sent message in the channel."
     )
-    @commands.guild_only()
     async def uwu_command(self, ctx, text = ''):
         await ctx.channel.trigger_typing()
 
@@ -74,7 +73,6 @@ class Fun(commands.Cog):
         description = "Replace every word in your message into another word with a similar meaning. *(hopefully)*\nMAKE SURE the message is enclosed in quotations (\")\nIf no message is included in the command, I will just thesaurize the last sent message in the channel.",
         aliases = ['tsr']
     )
-    @commands.guild_only()
     async def thesaurize_command(self, ctx, text=''):
         await ctx.channel.trigger_typing()
 

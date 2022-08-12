@@ -27,7 +27,6 @@ class Games(commands.Cog):
         usage = ' <move>',
         description = "Moves:\n`rock` or `r`\n`paper` or `p`\n`scissors` or `s`"
     )
-    @commands.guild_only()
     async def rps_command(self, ctx, choice = 'none'):
         await ctx.channel.trigger_typing()
 
@@ -75,17 +74,17 @@ class Games(commands.Cog):
             else:
                 player = (ctx.message.author.display_name, choice.lower())
             
-            cpu = (ctx.guild.me.display_name, options[random.randrange(len(options))])
+            cpu = (ctx.me.display_name, options[random.randrange(len(options))])
             
             rps_embed = discord.Embed(
                 title = 'Rock, Paper, Scissors!',
-                description = f"{ctx.message.author.display_name} used {option_emoji[options.index(player[1])]}!\n{ctx.guild.me.display_name} used {option_emoji[options.index(cpu[1])]}!\n\n"
+                description = f"{ctx.message.author.display_name} used {option_emoji[options.index(player[1])]}!\n{ctx.me.display_name} used {option_emoji[options.index(cpu[1])]}!\n\n"
             )
 
             if rps_sesh(player, cpu) == 'draw':
                 rps_embed.description += "It's a Draw!"
                 rps_embed.color = 0xF1C40F # GOLD
-            elif rps_sesh(player, cpu) == ctx.guild.me.display_name:
+            elif rps_sesh(player, cpu) == ctx.me.display_name:
                 rps_embed.description += f"{rps_sesh(player, cpu)} wins! :tada:"
                 rps_embed.color = 0xE74C3C # RED
                 rps_embed.set_thumbnail(url = self.bot.user.avatar_url)
@@ -103,7 +102,6 @@ class Games(commands.Cog):
         description = "Challenge me to a battle of wits and resources until one of us loses!\nThe main feature of this game is mana. Moves you can perform will have different mana costs.\nDuring a match, type `c moves` to see the movelist. Perform a move with the message: `c <move>`.",
         aliases = ['c']
     )
-    @commands.guild_only()
     @commands.cooldown(1, 86400, commands.BucketType.channel)
     async def charge_command(self, ctx):
         await ctx.channel.trigger_typing()
@@ -283,7 +281,7 @@ class Games(commands.Cog):
             return m.channel == ctx.message.channel and m.author == ctx.message.author
         
         player = Player(ctx.message.author.display_name)
-        cpu = Player(ctx.guild.me.display_name)
+        cpu = Player(ctx.me.display_name)
         
         # Initialise embed
         charge_embed = discord.Embed(
@@ -471,14 +469,12 @@ class Games(commands.Cog):
             print(log_message)
             charge_embed = discord.Embed(
                 title = 'Charge!',
-                description = f"{ctx.message.author.display_name}, you took too long to respond!\n{ctx.guild.me.display_name} WINS! :tada:"
+                description = f"{ctx.message.author.display_name}, you took too long to respond!\n{ctx.me.display_name} WINS! :tada:"
             )
             charge_embed.color = 0xE74C3C # RED
             charge_embed.set_thumbnail(url = self.bot.user.avatar_url)
             await ctx.send(embed = charge_embed)
             ctx.command.reset_cooldown(ctx)
-        elif isinstance(error, commands.NoPrivateMessage):
-            await ctx.author.send(content = f"Sorry {ctx.message.author.name}, I'll only play this in a server.")
         else:
             log_message = f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}\nIgnoring exception in command {ctx.prefix}{ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
             with open("./logs/weeblord.log", "a") as f:
@@ -492,7 +488,6 @@ class Games(commands.Cog):
         description = "Guess a random movie given a thesaurized plot!\nLives: any (default is 5)\nCategories:\n`top`(default) - top 250 movies\n`marvel`\n\nDuring a game, start your messages with `wm<space>` when guessing.\n\nMovie data source is provided by the folks who made the IMDbPY package! :grin:\nVisit them at https://imdbpy.github.io/",
         aliases = ['wm']
     )
-    @commands.guild_only()
     @commands.cooldown(1, 86400, commands.BucketType.channel)
     async def tsr_movie_command(self, ctx, category = 'top', lives = 5):
         while True:
@@ -677,8 +672,6 @@ class Games(commands.Cog):
             )
             await ctx.send(embed = wm_embed)
             ctx.command.reset_cooldown(ctx)
-        elif isinstance(error, commands.NoPrivateMessage):
-            await ctx.author.send(content = f"Sorry {ctx.message.author.name}, I'll only play this in a server.")
         else:
             log_message = f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}\nIgnoring exception in command {ctx.prefix}{ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
             with open("./logs/weeblord.log", "a") as f:

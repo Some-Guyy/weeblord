@@ -5,7 +5,7 @@ A simple discord bot with the usual normal commands. Being a weeblord, the main 
 
 *Note that this bot downloads approximately 100MB of NLTK data into your home directory as:* ```nltk_data```
 
-### Commands (as of v1.2.1)
+### Commands (as of v1.2.2)
 **Basic**
 - help
 - ping

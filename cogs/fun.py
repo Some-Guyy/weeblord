@@ -1,11 +1,11 @@
 import discord
 from discord.ext import commands
+import asyncio
 
 import random
 from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
-import asyncio
 
 class Fun(commands.Cog):
     def __init__(self, bot):
@@ -69,11 +69,11 @@ class Fun(commands.Cog):
 
     @commands.command(
         name = 'thesaurize',
-        description = "Replace every word from the previous message into another word with a similar meaning. *(hopefully)*\nYou can also add a number `(2-5)` after the command to re-thesaurize the output that many times!",
+        description = "Replace every word from the previous message into another word with a similar meaning. *(hopefully)*\nIf you wish to thesaurize a particular message, place them in quotations after the command like so: `'<message>'`",
         aliases = ['tsr']
     )
     @commands.guild_only()
-    async def thesaurize_command(self, ctx, times = 1):
+    async def thesaurize_command(self, ctx, text=''):
         await ctx.channel.trigger_typing()
 
         def thesaurize(input_string):
@@ -106,33 +106,31 @@ class Fun(commands.Cog):
                 thesaurized_list.append(thesaurized_word)
             return TreebankWordDetokenizer().detokenize(thesaurized_list)
         
-        if 1 <= times <= 5:
+        if text == '':
             messages = await ctx.channel.history(limit = 2).flatten()
             message = messages[1]
             text = message.content
 
-            for i in range(times):
-                text = thesaurize(text)
-                tsr_embed = discord.Embed(
-                    description = text,
-                    color = 0x11806A # DARK_AQUA
-                )
-                tsr_embed.set_author(
-                    name = message.author.display_name,
-                    icon_url = message.author.avatar_url
-                )
-                await ctx.send(embed = tsr_embed)
-                await asyncio.sleep(0.5)
-
-        else:
-            await asyncio.sleep(3)
+            text = thesaurize(text)
             tsr_embed = discord.Embed(
-                description = f"I am stupid enough to think that {self.bot.user.display_name} would do this {times} times.",
+                description = text,
                 color = 0x11806A # DARK_AQUA
             )
             tsr_embed.set_author(
-                name = ctx.message.author.display_name,
-                icon_url = ctx.message.author.avatar_url
+                name = message.author.display_name,
+                icon_url = message.author.avatar_url
+            )
+            await ctx.send(embed = tsr_embed)
+
+        else:
+            text = thesaurize(text)
+            tsr_embed = discord.Embed(
+                description = text,
+                color = 0x11806A # DARK_AQUA
+            )
+            tsr_embed.set_author(
+                name = ctx.author.display_name,
+                icon_url = ctx.author.avatar_url
             )
             await ctx.send(embed = tsr_embed)
 

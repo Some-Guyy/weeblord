@@ -13,11 +13,11 @@ class Fun(commands.Cog):
     
     @commands.command(
         name = 'uwu-ify',
-        description = "Uwu-ify de pwevious message. UwU",
+        description = "Uwu-ify de pweviuws message. If yuw wish to uwu-ify a pawticuwaw message, pwace dem in quotations aftew de command wike so: `'<message>'`",
         aliases = ['uwu']
     )
     @commands.guild_only()
-    async def uwu_command(self, ctx):
+    async def uwu_command(self, ctx, text = ''):
         await ctx.channel.trigger_typing()
 
         def uwu(string):
@@ -42,19 +42,30 @@ class Fun(commands.Cog):
             string += " uwu"
             return string
 
-        messages = await ctx.channel.history(limit = 2).flatten()
-        message = messages[1]
-        text = message.content
+        if text == '':
+            messages = await ctx.channel.history(limit = 2).flatten()
+            message = messages[1]
+            text = message.content
 
-        uwu_embed = discord.Embed(
-            description = uwu(text),
-            color = 0xE91E63 # LUMINOUS_VIVID_PINK
-        )
-        uwu_embed.set_author(
-            name = message.author.display_name,
-            icon_url = message.author.avatar_url
-        )
-        await ctx.send(embed = uwu_embed)
+            uwu_embed = discord.Embed(
+                description = uwu(text),
+                color = 0xE91E63 # LUMINOUS_VIVID_PINK
+            )
+            uwu_embed.set_author(
+                name = message.author.display_name,
+                icon_url = message.author.avatar_url
+            )
+            await ctx.send(embed = uwu_embed)
+        else:
+            uwu_embed = discord.Embed(
+                description = uwu(text),
+                color = 0xE91E63 # LUMINOUS_VIVID_PINK
+            )
+            uwu_embed.set_author(
+                name = ctx.author.display_name,
+                icon_url = ctx.author.avatar_url
+            )
+            await ctx.send(embed = uwu_embed)
 
     @commands.command(
         name = 'thesaurize',

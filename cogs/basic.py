@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 import asyncio
 
 # Bot version
-version = "1.2.0"
+version = "1.2.1"
 
 # New - The Cog class must extend the commands.Cog class
 class Basic(commands.Cog):
@@ -70,8 +70,9 @@ class Basic(commands.Cog):
         else:
             for cog in cogs:
                 cog_commands = self.bot.get_cog(cog).get_commands()
+                
                 for comm in cog_commands:
-                    if command == comm.name:
+                    if command == comm.name or command in comm.aliases:
                         help_text = f"**Command:** {comm.name}\n\n"
                         help_text += comm.description
 

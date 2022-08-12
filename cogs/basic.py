@@ -16,6 +16,8 @@ class Basic(commands.Cog):
     # Define a new command
     @commands.command(
         name = 'help',
+        brief = 'Help',
+        usage = '',
         description = "Ay dood what do you think this command is for?",
         aliases = ['h']
     )
@@ -89,7 +91,9 @@ class Basic(commands.Cog):
 
     @commands.command(
         name = 'ping',
-        description = "To check if I'm still alive.",
+        brief = 'Ping',
+        usage = '',
+        description = "To check whether I'm still alive.",
         aliases = ['p']
     )
     async def ping_command(self, ctx):
@@ -108,6 +112,8 @@ class Basic(commands.Cog):
     
     @commands.command(
         name = 'roll',
+        brief = 'Roll',
+        usage = ' <number>',
         description = "The basic roll command. Every discord bot should have this, right? Choose a number and I'll roll a random number up to your chosen one.",
         aliases = ['r']
     )

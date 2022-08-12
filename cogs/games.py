@@ -280,9 +280,7 @@ During a match, type `c<space>moves` to see the movelist. Start a move with the 
             return m.channel == ctx.message.channel and m.author == ctx.message.author
         
         player = Player(ctx.message.author.display_name)
-        player_avatar = ctx.message.author.avatar_url
         cpu = Player(ctx.guild.me.display_name)
-        cpu_avatar = self.bot.user.avatar_url
         
         # Initialise embed
         charge_embed = discord.Embed(

@@ -12,7 +12,7 @@ from nltk.tokenize import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 from difflib import SequenceMatcher
 
-from toolbox import moviez
+from toolbox import whatmovie
 import imdb
 ia = imdb.IMDb()
 top = ia.get_top250_movies()
@@ -538,7 +538,7 @@ During a match, type `c<space>moves` to see the movelist. Start a move with the 
             await ctx.channel.trigger_typing()
 
             category = category.lower()
-            if category not in moviez:
+            if category not in whatmovie:
                 await ctx.send(content = f"We don't have `{category}`.\nCategory list:\n`top` - (default) top 250 movies\n`marvel`")
                 ctx.command.reset_cooldown(ctx)
                 break
@@ -547,7 +547,7 @@ During a match, type `c<space>moves` to see the movelist. Start a move with the 
                 movie_id = random_movie.movieID
                 movie = ia.get_movie(movie_id)
             else:
-                full_movie_id = random.choice(moviez[category]['id'])
+                full_movie_id = random.choice(whatmovie[category]['id'])
                 movie_id = full_movie_id[2:]
                 movie = ia.get_movie(movie_id)
 
@@ -558,7 +558,7 @@ During a match, type `c<space>moves` to see the movelist. Start a move with the 
                 movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
             thesaurized_plot = thesaurize(movie_plot)
 
-            lives = moviez[category]['lives']
+            lives = whatmovie[category]['lives']
             lives_string = 'lives'
             wm_embed = discord.Embed(
                 title = 'What movie is this?',

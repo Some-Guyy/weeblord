@@ -1,4 +1,4 @@
-moviez = {
+whatmovie = {
     'top': {'lives': 5},
     'marvel': {
         'id': [

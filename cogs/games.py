@@ -23,14 +23,16 @@ class Games(commands.Cog):
 
     @commands.command(
         name = 'rps',
-        description = "Rock, Paper, Scissors!"
+        brief = 'Rock, Paper, Scissors!',
+        usage = ' <move>',
+        description = "Moves:\n`rock` or `r`\n`paper` or `p`\n`scissors` or `s`"
     )
     @commands.guild_only()
     async def rps_command(self, ctx, choice = 'none'):
         await ctx.channel.trigger_typing()
 
         if choice == 'none':
-            await ctx.send(content = f"To use this command, type `{ctx.prefix}{ctx.invoked_with} <choice>`\nChoices: `r/rock, p/paper, s/scissors`")
+            await ctx.send(content = f"To play, type `{ctx.prefix}{ctx.invoked_with} <move>`\nMoves:\n`rock` or `r`\n`paper` or `p`\n`scissors` or `s`")
         else:
             def rps_sesh(player1, player2):
                 none = []
@@ -66,7 +68,7 @@ class Games(commands.Cog):
             options = ['rock', 'paper', 'scissors']
             option_emoji = [':new_moon:', ':newspaper:', ':scissors:'] # For discord emoji
             if choice.lower() not in option_aliases and choice.lower() not in options:
-                await ctx.send(content = f"Wrong command bro, what the heck is {choice}?")
+                await ctx.send(content = f"Dude what kinda move is {choice}?")
                 return
             elif choice.lower() in option_aliases:
                 player = (ctx.message.author.display_name, options[option_aliases.index(choice.lower())])
@@ -96,9 +98,10 @@ class Games(commands.Cog):
 
     @commands.command(
         name = 'charge',
-        description = '''Challenge me to a battle of wits and resources until one of us loses!
-The main feature of this game is mana. Moves you can perform will have different mana costs.
-During a match, type `c<space>moves` to see the movelist. Start a move with the message `c<space>`.'''
+        brief = 'Charge!',
+        usage = '',
+        description = "Challenge me to a battle of wits and resources until one of us loses!\nThe main feature of this game is mana. Moves you can perform will have different mana costs.\nDuring a match, type `c moves` to see the movelist. Perform a move with the message: `c <move>`.",
+        aliases = ['c']
     )
     @commands.guild_only()
     @commands.cooldown(1, 86400, commands.BucketType.channel)
@@ -111,7 +114,7 @@ During a match, type `c<space>moves` to see the movelist. Start a move with the 
                 'bom': {'cost': 1, 'status': 'attack', 'stylized': ':comet:Bom'},
                 'boom': {'cost': 2, 'status': 'attack', 'stylized': ':boom:Boom'},
                 'slash': {'cost': 2, 'status': 'attack', 'stylized': ':crossed_swords:Slash'},
-                'fwoosh': {'cost': 4, 'status': 'attack', 'stylized': ':wind_blowing_face:Fwoosh'},
+                'smash': {'cost': 4, 'status': 'attack', 'stylized': ':wind_blowing_face:Smash'},
                 'stop': {'cost': 0, 'status': 'dead', 'stylized': ':flag_white: Gave up'}
         }
 
@@ -141,7 +144,7 @@ During a match, type `c<space>moves` to see the movelist. Start a move with the 
 
         def cpu_ai(player, cpu, move_dict):
             if cpu.mana == 4:
-                move = 'fwoosh'
+                move = 'smash'
             elif player.mana == 0:
                 move = random.choice(list(move_dict))
                 while move == 'stop' or cpu.mana - move_dict[move]['cost'] < 0 or move_dict[move]['status'] == 'defence':
@@ -328,7 +331,7 @@ During a match, type `c<space>moves` to see the movelist. Start a move with the 
 +--------+------+-------------------+
 | Slash  | 2    | Level 2 Attack    |
 +--------+------+-------------------+
-| Fwoosh | 4    | Level 4 Attack    |
+| Smash  | 4    | Level 4 Attack    |
 +--------+------+-------------------+
 | Stop   | None | Give up!          |
 +--------+------+-------------------+`''')
@@ -341,7 +344,7 @@ During a match, type `c<space>moves` to see the movelist. Start a move with the 
             elif player_move not in move_dict:
                 charge_embed = discord.Embed(
                     title = 'Charge!',
-                    description = f"What kind of move is {player_move}?!\nType `c<space>moves` to see the movelist.",
+                    description = f"What kind of move is {player_move}?!\nType `c moves` to see the movelist.",
                     color = 0x3498DB
                 )
                 continue

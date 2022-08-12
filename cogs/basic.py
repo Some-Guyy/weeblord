@@ -73,7 +73,8 @@ class Basic(commands.Cog):
                 
                 for comm in cog_commands:
                     if command == comm.name or command in comm.aliases:
-                        help_text = f"**Command:** {comm.name}\n\n"
+                        help_text = f"**Command:** {comm.brief}\n\n"
+                        help_text += f"**Usage:** `{ctx.prefix}{comm.name}{comm.usage}`\n\n"
                         help_text += comm.description
 
                         if len(comm.aliases) > 0:

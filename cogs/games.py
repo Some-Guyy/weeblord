@@ -484,12 +484,14 @@ During a match, type `c<space>moves` to see the movelist. Start a move with the 
 
     @commands.command(
         name = 'whatmovie',
-        description = "Guess a random movie given a thesaurized plot!\nYou have 5 chances!\nYou may also choose a category by adding the category name after the command.\nCategories:\n`top` - (default) top 250 movies\n`marvel`\n\nDuring a game, start your messages with `wm<space>` when guessing.\n\nMovie data source is provided by the folks who made the IMDbPY package! :grin:\nVisit them at https://imdbpy.github.io/",
+        brief = 'What Movie?',
+        usage = ' <category> <lives>',
+        description = "Guess a random movie given a thesaurized plot!\nLives: any (default is 5)\nCategories:\n`top`(default) - top 250 movies\n`marvel`\n\nDuring a game, start your messages with `wm<space>` when guessing.\n\nMovie data source is provided by the folks who made the IMDbPY package! :grin:\nVisit them at https://imdbpy.github.io/",
         aliases = ['wm']
     )
     @commands.guild_only()
     @commands.cooldown(1, 86400, commands.BucketType.channel)
-    async def tsr_movie_command(self, ctx, category = 'top'):
+    async def tsr_movie_command(self, ctx, category = 'top', lives = 5):
         while True:
             await ctx.channel.trigger_typing()
 
@@ -532,15 +534,20 @@ During a match, type `c<space>moves` to see the movelist. Start a move with the 
 
                 return TreebankWordDetokenizer().detokenize(thesaurized_list)
 
-            load_message = await ctx.send(content = "Hmmm which movie shall I choose? :thinking: Lemme see...")
-            await ctx.channel.trigger_typing()
-
             category = category.lower()
             if category not in whatmovie:
-                await ctx.send(content = f"We don't have `{category}`.\nCategory list:\n`top` - (default) top 250 movies\n`marvel`")
+                await ctx.send(content = f"We don't have the category `{category}`. Use the help command to check the available categories and try again.")
                 ctx.command.reset_cooldown(ctx)
                 break
-            elif category == 'top':
+            elif lives < 1 or lives > 10:
+                await ctx.send(content = f"I'll only accept 1-10 lives, try again.")
+                ctx.command.reset_cooldown(ctx)
+                break
+
+            load_message = await ctx.send(content = "Hmmm which movie shall I choose? :thinking: Lemme see...")
+            await ctx.channel.trigger_typing()
+            
+            if category == 'top':
                 random_movie = top[random.randrange(0,len(top)+1)]
                 movie_id = random_movie.movieID
                 movie = ia.get_movie(movie_id)
@@ -556,7 +563,6 @@ During a match, type `c<space>moves` to see the movelist. Start a move with the 
                 movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
             thesaurized_plot = thesaurize(movie_plot)
 
-            lives = whatmovie[category]['lives']
             lives_string = 'lives'
             wm_embed = discord.Embed(
                 title = 'What movie is this?',

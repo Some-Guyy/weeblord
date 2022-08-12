@@ -11,9 +11,10 @@ class Fun(commands.Cog):
         self.bot = bot
     
     @commands.command(
-        name = 'uwu-ify',
-        description = "Uwu-ify de pweviuws message. If yuw wish to uwu-ify a pawticuwaw message, pwace dem in quotations aftew de command wike so: `'<message>'`",
-        aliases = ['uwu']
+        name = 'uwu',
+        brief = 'Uwu-ify',
+        usage = ' "<message>"',
+        description = "Uwu-ify a message, MAKE SURE the message is enclosed in quotations (\").\nIf no message is included in the command, I will just uwu-ify the last sent message in the channel."
     )
     @commands.guild_only()
     async def uwu_command(self, ctx, text = ''):
@@ -68,7 +69,9 @@ class Fun(commands.Cog):
 
     @commands.command(
         name = 'thesaurize',
-        description = "Replace every word from the previous message into another word with a similar meaning. *(hopefully)*\nIf you wish to thesaurize a particular message, place them in quotations after the command like so: `'<message>'`",
+        brief = 'Thesaurize',
+        usage = ' "<message>"',
+        description = "Replace every word in your message into another word with a similar meaning. *(hopefully)*\nMAKE SURE the message is enclosed in quotations (\")\nIf no message is included in the command, I will just thesaurize the last sent message in the channel.",
         aliases = ['tsr']
     )
     @commands.guild_only()

@@ -12,5 +12,6 @@ Thumbs.db
 #Logging
 logs/
 
-#Token
+#Token and prefix
 token.txt
+prefix.txt

@@ -11,11 +11,15 @@ nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 
+# Token that allows the bot to login
 f = open('./token.txt', 'r')
 token = f.read()
 f.close()
 
-prefix = '$'
+# Prefix for the bot
+f = open('./prefix.txt', 'r')
+prefix = f.read()
+f.close()
 
 bot = commands.Bot(
     command_prefix = prefix,

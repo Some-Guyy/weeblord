@@ -150,3 +150,4 @@ def setup(bot):
     bot.add_cog(Basic(bot))
     # Adds the Basic commands to the bot
     # Note: The "setup" function has to be there in every cog file
+

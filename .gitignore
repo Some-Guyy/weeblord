@@ -8,10 +8,8 @@ __pycache__/
 #Others
 Thumbs.db
 .DS_Store
+.env
 
 #Logging
 logs/
 
-#Token and prefix
-token.txt
-prefix.txt

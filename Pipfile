@@ -4,10 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-discord = "*"
-nltk = "*"
-imdbpy = "*"
-pytz = "*"
+py-cord = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

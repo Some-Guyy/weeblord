@@ -1,7 +1,7 @@
 import discord
 
 # Bot version
-version = "2.0.0-alpha1"
+version = "2.0.0-alpha2"
 
 # New - The Cog class must extend the commands.Cog class
 class Basic(discord.Cog):

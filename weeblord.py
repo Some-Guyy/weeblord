@@ -25,7 +25,7 @@ for resource in nltk_resources:
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = discord.Bot(debug_guilds=[275926238504419328, 625670916658954240], intents = intents)
+bot = discord.Bot(debug_guilds=[275926238504419328, 625670916658954240], intents = intents, activity = discord.Game(name = "( ͡° ͜ʖ ͡°) | /help"))
 
 cogs_list = ['basic', 'fun', 'games']
 
@@ -34,6 +34,7 @@ for cog in cogs_list:
 
 @bot.event
 async def on_ready():
+    # await bot.change_presence(activity = discord.Game(name = "( ͡° ͜ʖ ͡°) | /help"))
     print(f"{bot.user} is ready and online!")
 
 bot.run(os.getenv('TOKEN'))

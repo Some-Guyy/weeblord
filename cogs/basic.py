@@ -1,11 +1,10 @@
 import discord
 import logging
 
-# Initialise logging.
-logging.basicConfig(filename = 'logs/basic.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
+logging.basicConfig(filename = 'logs/weeblord.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
 
 # Bot version
-version = "2.0.0-alpha3"
+version = "2.0.0-rc"
 
 # New - The Cog class must extend the commands.Cog class
 class Basic(discord.Cog):
@@ -15,13 +14,23 @@ class Basic(discord.Cog):
     # Define a new command
     @discord.slash_command(name = 'help', description = 'Learn how to be a weeb.')
     async def help(self, ctx):
-        # The third parameter comes into play when only one word argument has to be passed by the user
+        libraries_dict = {
+            "python-dotenv": "https://github.com/theskumar/python-dotenv",
+            "nltk": "https://www.nltk.org/",
+            "cinemagoer": "https://cinemagoer.github.io/"
+        }
+
         # Prepare the embed
         help_embed = discord.Embed(
             title = 'Help',
-            description = f"*Bot version: {version}*\n",
-            color = discord.Colour.blurple()
-        )
+            description = "What can I do for you?\n",
+            color = discord.Colour.brand_green(),
+        ).set_author(
+            name = self.bot.user.display_name,
+            icon_url = self.bot.user.display_avatar
+        ).set_thumbnail(
+            url = self.bot.user.display_avatar
+        ).set_footer(text = f"v{version}")
 
         # Get a list of all cogs
         cogs = [c for c in self.bot.cogs.keys()]
@@ -48,12 +57,23 @@ class Basic(discord.Cog):
             help_embed.add_field(
                 name = cog,
                 value = commands_list,
-                inline = False
+                inline = True
             )
         
         help_embed.add_field(
             name = '\u200b',
-            value = "Type `/<command name>` to learn more and try it out!",
+            value = "Go ahead and try one out with `/<command>`!\n\u200b",
+            inline = False
+        )
+
+        # Acknowledgments
+        libraries = ""
+        for library in libraries_dict:
+            libraries += f"\n[{library}]({libraries_dict[library]})"
+
+        help_embed.add_field(
+            name = 'Acknowledgements',
+            value = f"This bot was created using [Pycord](https://pycord.dev/), together with other open source libraries!\n\u200b\n__Libraries__{libraries}\n\u200b",
             inline = False
         )
 

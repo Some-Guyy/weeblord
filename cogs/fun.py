@@ -6,8 +6,7 @@ from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 
-# Initialise logging.
-logging.basicConfig(filename = 'logs/fun.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
+logging.basicConfig(filename = 'logs/weeblord.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
 
 class Fun(discord.Cog):
     def __init__(self, bot):
@@ -127,7 +126,7 @@ class Fun(discord.Cog):
 
             tsr_embed = discord.Embed(
                 description = text,
-                color = discord.Colour.og_blurple()
+                color = discord.Colour.dark_magenta()
             )
 
             tsr_embed.set_author(
@@ -142,7 +141,7 @@ class Fun(discord.Cog):
 
             tsr_embed = discord.Embed(
                 description = text,
-                color = discord.Colour.og_blurple()
+                color = discord.Colour.dark_magenta()
             )
 
             tsr_embed.set_author(

@@ -9,28 +9,23 @@ from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 from difflib import SequenceMatcher
+from imdb import Cinemagoer, IMDbError
 
-from toolbox import whatmovie
-# import imdb
-# ia = imdb.IMDb()
-# top = ia.get_top250_movies()
-
-# Initialise logging.
-logging.basicConfig(filename = 'logs/games.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
+logging.basicConfig(filename = 'logs/weeblord.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
 
 class Games(discord.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @discord.slash_command(name = 'rps', description = "Rock paper scissors!")
-    @discord.option('move', choices = ['Rock', 'Paper', 'Scissors'])
+    @discord.slash_command(name = 'rps', description = "Rock, paper, scissors!")
+    @discord.option('move', choices = ['rock', 'paper', 'scissors'])
     async def rps(self, ctx, move: str):
         def rps_sesh(player1, player2):
             none = []
             rocks = []
 
             for i in [player1, player2]:
-                if i[1] == 'Rock':
+                if i[1] == 'rock':
                     rocks.append(i)
                 else:
                     none.append(i)
@@ -39,7 +34,7 @@ class Games(discord.Cog):
                 return 'draw'
 
             elif len(rocks) == 1:
-                if none[0][1] == 'Scissors':
+                if none[0][1] == 'scissors':
                     return rocks[0][0]
                 else:
                     return none[0][0]
@@ -49,7 +44,7 @@ class Games(discord.Cog):
                 paper = []
 
                 for i in [player1, player2]:
-                    if i[1] == 'Paper':
+                    if i[1] == 'paper':
                         paper.append(i)
                     else:
                         none.append(i)
@@ -61,7 +56,7 @@ class Games(discord.Cog):
                 else:
                     return 'draw'
         
-        move_list = ['Rock', 'Paper', 'Scissors']
+        move_list = ['rock', 'paper', 'scissors']
         move_emoji = [':new_moon:', ':newspaper:', ':scissors:'] # For discord emoji
         player = (ctx.author.display_name, move)
         cpu = (self.bot.user.display_name, move_list[random.randrange(len(move_list))])
@@ -87,8 +82,8 @@ class Games(discord.Cog):
 
         await ctx.respond(embed = rps_embed)
 
-    @discord.slash_command(name = 'charge', description = "Challenge me to a game of charge! `Help` for help, `Charge` to start a game.")
-    @discord.option('option', choices = ['Help'], required = False)
+    @discord.slash_command(name = 'charge', description = "Challenge me to a game of charge! 'Help' to learn more.")
+    @discord.option('option', description = "Use 'Help' to learn more.", choices = ['Help'], required = False)
     @commands.cooldown(1, 86400, commands.BucketType.channel)
     async def charge(self, ctx, option: str):
         move_dict = {
@@ -283,11 +278,10 @@ class Games(discord.Cog):
                 return announce('attack_overpower', winner, loser)
 
             # Define a check function that validates the message received by the bot
-            def check(author):
+            def check(message: discord.Message):
                 # Look for the message sent in the same channel where the command was used
                 # As well as by the user who used the command.
-                def inner_check(message):
-                    return message.author == author and message.channel == ctx.message.channel
+                return message.author.id == ctx.author.id and message.channel.id == ctx.channel.id
 
             player = Player(ctx.author.display_name)
             cpu = Player(ctx.me.display_name)
@@ -317,14 +311,14 @@ class Games(discord.Cog):
                 # Player move
                 valid = 'no'
                 while valid == 'no':
-                    move_message = await self.bot.wait_for('message', check = check(ctx.author), timeout = 30)
+                    move_message = await self.bot.wait_for('message', check = check, timeout = 30)
                     if move_message.content[:2].lower() == 'c ':
                         await ctx.channel.trigger_typing()
                         player_move = move_message.content[2:].lower()
                         await move_message.delete()
                         valid = 'yes'
 
-                if player_move == 'moves':
+                if player_move == 'help':
                     charge_embed = discord.Embed(
                         title = 'Charge!',
                         description = "Aight there's yer movelist.",
@@ -348,7 +342,7 @@ class Games(discord.Cog):
                 elif player_move not in move_dict:
                     charge_embed = discord.Embed(
                         title = 'Charge!',
-                        description = f"What kind of move is {player_move}?!\nType `c moves` to see the movelist.",
+                        description = f"What kind of move is {player_move}?!\nType `c help` to see the movelist.",
                         color = discord.Colour.blue()
                     )
                     continue
@@ -466,14 +460,14 @@ class Games(discord.Cog):
     @charge.error
     async def charge_handler(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
-            logging.info(f"{ctx.message.author} tried to run Charge in {ctx.guild} - #{ctx.channel} while an instance is already running.")
-            await ctx.respond("A game of Charge is already running on this channel!")
+            logging.info(f"{ctx.author} tried to run {ctx.command} in {ctx.guild} - #{ctx.channel} while an instance is already running.")
+            await ctx.respond(f"A game of {ctx.command} is already running on this channel!")
 
-        elif isinstance(error, commands.CommandInvokeError):
-            logging.info(f"{ctx.message.author} took to long to respond during Charge in {ctx.guild} - #{ctx.channel}")
+        elif isinstance(error, discord.errors.ApplicationCommandInvokeError):
+            logging.info(f"{ctx.author} took to long to respond during Charge in {ctx.guild} - #{ctx.channel}")
             charge_embed = discord.Embed(
                 title = 'Charge!',
-                description = f"{ctx.message.author.display_name}, you took too long to respond!\n{ctx.me.display_name} WINS! :tada:"
+                description = f"{ctx.author.display_name}, you took too long to respond!\n{self.bot.user.display_name} WINS! :tada:"
             )
             charge_embed.color = discord.Colour.red()
             charge_embed.set_thumbnail(url = self.bot.user.display_avatar)
@@ -481,206 +475,263 @@ class Games(discord.Cog):
             ctx.command.reset_cooldown(ctx)
 
         else:
-            log_message = f"Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nIgnoring exception in command {ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
+            log_message = f"Invoked by: {ctx.author}. During {ctx.command}. Server and channel: {ctx.guild} - #{ctx.channel}. Ignoring exception in command {ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
             logging.warning(log_message)
             print("[ERROR] " + log_message)
 
-#     @commands.command(
-#         name = 'whatmovie',
-#         brief = 'What Movie?',
-#         usage = ' <category> <lives>',
-#         description = "Guess a random movie given a thesaurized plot!\nLives: any (default is 5)\nCategories:\n`top`(default) - top 250 movies\n`marvel`\n\nDuring a game, start your messages with `wm<space>` when guessing.\n\nMovie data source is provided by the folks who made the IMDbPY package! :grin:\nVisit them at https://imdbpy.github.io/",
-#         aliases = ['wm']
-#     )
-#     @commands.cooldown(1, 86400, commands.BucketType.channel)
-#     async def tsr_movie_command(self, ctx, category = 'top', lives = 5):
-#         while True:
-#             await ctx.channel.trigger_typing()
+    @discord.slash_command(name = 'whatmovie', description = "Guess a random movie given a thesaurized plot!")
+    @discord.option('category', description = "Category of movies.", choices = ['top', 'popular', 'shitty', 'marvel'], default = 'top')
+    @discord.option('lives', description = "Number of chances you can get it wrong.", min_value = 1, max_value = 10, default = 5)
+    @commands.cooldown(1, 86400, commands.BucketType.channel)
+    async def what_movie(self, ctx, category: str, lives: int):
+        what_movie_title = "What movie is this?"
+        what_movie_instructions = ":warning: Remember to FORMAT your message with `wm <guess>` when attempting to guess! Send `wm skipwm` to get a different movie, or `wm giveup` to give up."
 
-#             def similar(a, b):
-#                 return SequenceMatcher(None, a, b).ratio()
+        while True:
+            await ctx.channel.trigger_typing()
+            movie_dict = {
+                'marvel': {
+                    'id': [ # List of titles are manually added from here: https://en.wikipedia.org/wiki/List_of_films_based_on_Marvel_Comics_publications
+                        'tt0120611', 'tt0120903', 'tt0187738',
+                        'tt0145487', 'tt0287978', 'tt0290334',
+                        'tt0286716', 'tt0330793', 'tt0316654',
+                        'tt0359013', 'tt0357277', 'tt0120667',
+                        'tt0376994', 'tt0259324', 'tt0413300',
+                        'tt0486576', 'tt0371746', 'tt0800080',
+                        'tt0450314', 'tt0458525', 'tt1228705',
+                        'tt0800369', 'tt1270798', 'tt0458339',
+                        'tt1071875', 'tt0848228', 'tt0948470',
+                        'tt1300854', 'tt1430132', 'tt1981115',
+                        'tt1843866', 'tt1872181', 'tt1877832',
+                        'tt2015381', 'tt2395427', 'tt0478970',
+                        'tt1502712', 'tt1431045', 'tt3498820',
+                        'tt3385516', 'tt1211837', 'tt3315342',
+                        'tt3896198', 'tt2250912', 'tt3501632',
+                        'tt1825683', 'tt4154756', 'tt5463162',
+                        'tt5095030', 'tt1270797', 'tt4154664',
+                        'tt4154796', 'tt6565702', 'tt6320628',
+                        'tt2245084', 'tt4633694', 'tt4682266',
+                        'tt3480822', 'tt9376612', 'tt7097896',
+                        'tt9032400', 'tt10872600', 'tt5108870',
+                        'tt9419884', 'tt10648342', 'tt9114286'
+                        ]
+                }
+            }
 
-#             def check(m):
-#                 # Look for the message sent in the same channel where the command was used
-#                 # As well as by the user who used the command.
-#                 return m.channel == ctx.message.channel
+            def thesaurize_string(input_string):
+                skip_words = ['who'] # Add certain words that don't work too well.
+                tokenized_list = word_tokenize(input_string.lower())
+                thesaurized_list = []
 
-#             def thesaurize(input_string):
-#                 skip_words = ['who']
-#                 tokenized_list = word_tokenize(input_string.lower())
-#                 thesaurized_list = []
-#                 for word in tokenized_list:
-#                     synset_list = wordnet.synsets(word)
-#                     thesaurized_word = word
-#                     try_count = 0
-#                     while thesaurized_word.lower() == word.lower():
-#                         try_count += 1
-#                         if try_count == 21:
-#                             break
-#                         if word.lower() in skip_words:
-#                             break
-#                         if len(word) < 3:
-#                             break
-#                         if len(synset_list) > 0:
-#                             usable_synset_list = []
-#                             for synset in synset_list:
-#                                 if len(synset.lemmas()) > 1:
-#                                     usable_synset_list.append(synset)
-#                             if len(usable_synset_list) > 0:
-#                                 thesaurized_word = random.choice(random.choice(usable_synset_list).lemmas()).name()
-#                             else:
-#                                 break
-#                         else:
-#                             break
-#                     thesaurized_list.append(thesaurized_word)
+                for word in tokenized_list:
+                    synset_list = wordnet.synsets(word)
+                    thesaurized_word = word
+                    try_count = 0
 
-#                 return TreebankWordDetokenizer().detokenize(thesaurized_list)
+                    while thesaurized_word.lower() == word.lower():
+                        try_count += 1
 
-#             category = category.lower()
-#             if category not in whatmovie:
-#                 await ctx.send(content = f"We don't have the category `{category}`. Use the help command to check the available categories and try again.")
-#                 ctx.command.reset_cooldown(ctx)
-#                 break
-#             elif lives < 1 or lives > 10:
-#                 await ctx.send(content = f"I'll only accept 1-10 lives, try again.")
-#                 ctx.command.reset_cooldown(ctx)
-#                 break
+                        if try_count == 21:
+                            break
+                        if word.lower() in skip_words:
+                            break
+                        if len(word) < 3:
+                            break
 
-#             load_message = await ctx.send(content = "Hmmm which movie shall I choose? :thinking: Lemme see...")
-#             await ctx.channel.trigger_typing()
+                        if len(synset_list) > 0:
+                            usable_synset_list = []
+
+                            for synset in synset_list:
+                                if len(synset.lemmas()) > 1:
+                                    usable_synset_list.append(synset)
+
+                            if len(usable_synset_list) > 0:
+                                thesaurized_word = random.choice(random.choice(usable_synset_list).lemmas()).name()
+                            else:
+                                break
+
+                        else:
+                            break
+
+                    thesaurized_list.append(thesaurized_word)
+
+                return TreebankWordDetokenizer().detokenize(thesaurized_list)
             
-#             if category == 'top':
-#                 random_movie = top[random.randrange(0,len(top)+1)]
-#                 movie_id = random_movie.movieID
-#                 movie = ia.get_movie(movie_id)
-#             else:
-#                 full_movie_id = random.choice(whatmovie[category]['id'])
-#                 movie_id = full_movie_id[2:]
-#                 movie = ia.get_movie(movie_id)
+            def similar(a, b):
+                return SequenceMatcher(None, a, b).ratio()
 
-#             movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
+            def check(message: discord.Message):
+                # Look for the message sent in the same channel where the command was used
+                return message.channel.id == ctx.channel.id
 
-#             # Prevent error where embed.description hits over 2048 characters
-#             while len(movie_plot) > 2000:
-#                 movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
-#             thesaurized_plot = thesaurize(movie_plot)
+            await ctx.respond("Hmmm which movie shall I choose? :thinking: Lemme see...")
+            await ctx.channel.trigger_typing()
 
-#             lives_string = 'lives'
-#             wm_embed = discord.Embed(
-#                 title = 'What movie is this?',
-#                 description = f"You have **{lives}** {lives_string}\nCategory: {category}\n\n__**Plot**__\n{thesaurized_plot}",
-#                 color = 0x7289DA # BLURPLE
-#             ).add_field(
-#                 name = '\u200b',
-#                 value = ":warning: Remember to START your message with `wm<space>` when attempting to guess! Send `skip` to get a different movie, or `stop` to give up.",
-#                 inline = False
-#             )
-#             wm_message = await ctx.send(embed = wm_embed)
-#             await load_message.delete()
-#             guessed = 'no'
+            ia = Cinemagoer()
+            if category == 'top':
+                top = ia.get_top250_movies()
+                random_movie = top[random.randrange(0,len(top))]
+                movie_id = random_movie.movieID
+            
+            elif category == 'popular':
+                popular = ia.get_popular100_movies()
+                random_movie = popular[random.randrange(0,len(popular))]
+                movie_id = random_movie.movieID
+            
+            elif category == 'shitty':
+                bottom = ia.get_bottom100_movies()
+                random_movie = bottom[random.randrange(0,len(bottom))]
+                movie_id = random_movie.movieID
 
-#             while guessed == 'no':
-#                 player_message = await self.bot.wait_for('message', check = check, timeout = 120)
-#                 if player_message.content.lower() == 'skip':
-#                     guessed = 'skip'
-#                 elif player_message.content.lower() == 'stop':
-#                     guessed = 'stop'
-#                 elif player_message.content[:3].lower() == 'wm ':
-#                     await ctx.channel.trigger_typing()
-#                     if similar(movie['title'].lower(), player_message.content[3:].lower()) < 0.7:
-#                         lives -= 1
-#                         if lives == 1:
-#                             lives_string = 'life'
-#                         elif lives == 0:
-#                             break
-#                         await wm_message.delete()
-#                         wm_embed = discord.Embed(
-#                             title = 'What movie is this?',
-#                             description = f":x:\n{player_message.author.display_name} was wrong!\nYou have **{lives}** {lives_string} left!\nCategory: {category}\n\n__**Plot**__\n{thesaurized_plot}",
-#                             color = 0x7289DA # BLURPLE
-#                         ).add_field(
-#                             name = '\u200b',
-#                             value = ":warning: Remember to START your message with `wm<space>` when attempting to guess! Send `skip` to get a different movie, or `stop` to give up.",
-#                             inline = False
-#                         )
-#                         wm_message = await ctx.send(embed = wm_embed)
-#                     else:
-#                         guessed = 'yes'
+            else:
+                movie_id_list = random.choice(movie_dict[category]['id'])
+                movie_id = movie_id_list[2:]
 
-#             if guessed == 'skip':
-#                 wm_embed = discord.Embed(
-#                     title = 'What movie is this?',
-#                     description = f":no_entry_sign:\nSkipped! Game Over.\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{movie_id}",
-#                     color = discord.Colour.red()
-#                 )
-#                 if movie['cover url'] is not None:
-#                     wm_embed.set_image(url = movie['cover url'])
-#                 await ctx.send(embed = wm_embed)
-#                 continue # Restart method
-#             elif guessed == 'stop':
-#                 wm_embed = discord.Embed(
-#                     title = 'What movie is this?',
-#                     description = f":no_entry_sign:\nGave up! Game Over.\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{movie_id}",
-#                     color = discord.Colour.red()
-#                 )
-#                 if movie['cover url'] is not None:
-#                     wm_embed.set_image(url = movie['cover url'])
-#             elif lives == 0:
-#                 wm_embed = discord.Embed(
-#                     title = 'What movie is this?',
-#                     description = f":broken_heart:\nNo more lives! Game Over.\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{movie_id}",
-#                     color = discord.Colour.red()
-#                 )
-#                 if movie['cover url'] is not None:
-#                     wm_embed.set_image(url = movie['cover url'])
-#             elif guessed == 'yes':
-#                 wm_embed = discord.Embed(
-#                     title = 'What movie is this?',
-#                     description = f"{player_message.author.display_name} got it right! :tada:\nThe movie is: {movie['title']}\nhttps://imdb.com/title/tt{movie_id}",
-#                     color = discord.Colour.green()
-#                 )
-#                 wm_embed.set_thumbnail(url = player_message.author.avatar_url)
-#                 if movie['cover url'] is not None:
-#                     wm_embed.set_image(url = movie['cover url'])
-#             else:
-#                 log_message = f"[ERROR] No one guessed right and lives were still above 0 during a WhatMovie in {ctx.guild} - #{ctx.channel}.\nTimestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}"
-#                 with open("./logs/weeblord.log", "a") as f:
-#                     f.write(f"\n{log_message}")
-#                 print(log_message)
-#                 wm_embed = discord.Embed(
-#                     title = 'What movie is this?',
-#                     description = log_message
-#                 )
+            movie = ia.get_movie(movie_id)
+            movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
 
-#             await ctx.send(embed = wm_embed)
-#             ctx.command.reset_cooldown(ctx)
-#             return
+            # Prevent error where embed.description hits over 2048 characters
+            long_plot = True
+            while long_plot:
+                movie_plot = movie['plot'][random.randrange(0, len(movie['plot']))]
+                thesaurized_plot = thesaurize_string(movie_plot)
+                if len(thesaurized_plot) <= 2048:
+                    long_plot = False
 
-#     @tsr_movie_command.error
-#     async def tsr_movie_command_handler(self, ctx, error):
-#         if isinstance(error, commands.CommandOnCooldown):
-#             log_message = f"[INFO] {ctx.message.author} tried to run WhatMovie in {ctx.guild} - #{ctx.channel} while an instance is already running.\nTimestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}"
-#             with open("./logs/weeblord.log", "a") as f:
-#                 f.write(f"\n{log_message}")
-#             print(log_message)
-#             await ctx.send(content = f"A game of WhatMovie is already running on this channel!")
-#         elif isinstance(error, commands.CommandInvokeError):
-#             log_message = f"[INFO] No one responded for too long during WhatMovie in {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}"
-#             with open("./logs/weeblord.log", "a") as f:
-#                 f.write(f"\n{log_message}\n{error}")
-#             print(f"{log_message}\n{error}")
-#             wm_embed = discord.Embed(
-#                 title = 'What movie is this?',
-#                 description = f"No one responded. :shrug:\nGame over.",
-#                 color = discord.Colour.red()
-#             )
-#             await ctx.send(embed = wm_embed)
-#             ctx.command.reset_cooldown(ctx)
-#         else:
-#             log_message = f"[ERROR] Invoked by: {ctx.message.author}\nServer and channel: {ctx.guild} - #{ctx.channel}\nTimestamp: {datetime.now(timezone.utc).astimezone(pytz.timezone('Singapore'))}\nIgnoring exception in command {ctx.prefix}{ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
-#             with open("./logs/weeblord.log", "a") as f:
-#                 f.write(f"\n{log_message}")
-#             print(log_message)
+            if lives > 1:
+                lives_string = 'lives'
+            else:
+                lives_string = 'life'
+
+            wm_embed = discord.Embed(
+                title = what_movie_title,
+                description = f"You have **{lives}** {lives_string}\nCategory: {category}\n\n__**Plot**__\n{thesaurized_plot}",
+                color = discord.Colour.magenta()
+            ).add_field(
+                name = '\u200b',
+                value = what_movie_instructions,
+                inline = False
+            )
+
+            wm_message = await ctx.send(embed = wm_embed)
+            guessed = 'no'
+
+            while guessed == 'no':
+                player_message = await self.bot.wait_for('message', check = check, timeout = 120)
+
+                if player_message.content[:3].lower() == 'wm ':
+                    player_guess = player_message.content[3:].lower()
+
+                    if player_guess == 'skipwm':
+                        guessed = 'skip'
+                    elif player_guess == 'giveup':
+                        guessed = 'stop'
+                    else:
+                        await ctx.channel.trigger_typing()
+
+                        if similar(movie['title'].lower(), player_guess) < 0.7:
+                            lives -= 1
+
+                            if lives == 1:
+                                lives_string = 'life'
+                            elif lives == 0:
+                                break
+
+                            wm_embed = discord.Embed(
+                                title = what_movie_title,
+                                description = f":x:\n{player_message.author.display_name} guessed *{player_guess}* and was wrong!\nYou have **{lives}** {lives_string} left!\nCategory: {category}\n\n__**Plot**__\n{thesaurized_plot}",
+                                color = discord.Colour.magenta()
+                            ).add_field(
+                                name = '\u200b',
+                                value = what_movie_instructions,
+                                inline = False
+                            )
+
+                            await player_message.delete()
+                            await wm_message.delete()
+                            wm_message = await ctx.send(embed = wm_embed)
+
+                        else:
+                            guessed = 'yes'
+
+            if guessed == 'skip':
+                wm_embed = discord.Embed(
+                    title = what_movie_title,
+                    description = f":no_entry_sign:\nSkipped! Game Over.\nThe movie is [{movie['title']}](https://imdb.com/title/tt{movie_id})",
+                    color = discord.Colour.red()
+                )
+                if movie['cover url'] is not None:
+                    wm_embed.set_image(url = movie['cover url'])
+                await ctx.send(embed = wm_embed)
+                continue # Restart method via while loop.
+
+            elif guessed == 'stop':
+                wm_embed = discord.Embed(
+                    title = what_movie_title,
+                    description = f":no_entry_sign:\nGave up! Game Over.\nThe movie is [{movie['title']}](https://imdb.com/title/tt{movie_id})",
+                    color = discord.Colour.red()
+                )
+                if movie['cover url'] is not None:
+                    wm_embed.set_image(url = movie['cover url'])
+
+            elif lives == 0:
+                wm_embed = discord.Embed(
+                    title = what_movie_title,
+                    description = f":broken_heart:\nNo more lives! Game Over.\nThe movie is [{movie['title']}](https://imdb.com/title/tt{movie_id})",
+                    color = discord.Colour.red()
+                )
+                if movie['cover url'] is not None:
+                    wm_embed.set_image(url = movie['cover url'])
+
+            elif guessed == 'yes':
+                wm_embed = discord.Embed(
+                    title = what_movie_title,
+                    description = f"{player_message.author.display_name} got it right! :tada:\nThe movie is [{movie['title']}](https://imdb.com/title/tt{movie_id})",
+                    color = discord.Colour.green()
+                )
+                wm_embed.set_thumbnail(url = player_message.author.avatar_url)
+                if movie['cover url'] is not None:
+                    wm_embed.set_image(url = movie['cover url'])
+
+            else:
+                log_message = f"No one guessed right and lives were still above 0 during a {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}."
+                logging.warning(log_message)
+                wm_embed = discord.Embed(
+                    title = what_movie_title,
+                    description = log_message
+                )
+
+            await ctx.send(embed = wm_embed)
+            ctx.command.reset_cooldown(ctx)
+            return # To break out of the while loop.
+
+    @what_movie.error
+    async def what_movie_handler(self, ctx, error):
+        what_movie_title = 'What movie is this?'
+
+        if isinstance(error, commands.CommandOnCooldown):
+            logging.info(f"{ctx.author} tried to run {ctx.command} in {ctx.guild} - #{ctx.channel} while an instance is already running.")
+            await ctx.respond(f"A game of {ctx.command} is already running on this channel!")
+
+        elif isinstance(error, discord.errors.ApplicationCommandInvokeError):
+            logging.info(f"No one responded for too long during {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}")
+            wm_embed = discord.Embed(
+                title = what_movie_title,
+                description = f"No one responded. :shrug:\nGame over.",
+                color = discord.Colour.red()
+            )
+            await ctx.send(embed = wm_embed)
+            ctx.command.reset_cooldown(ctx)
+
+        elif isinstance(error, IMDbError):
+            log_message = f"IMDbError invoked by: {ctx.author}. During {ctx.command}. Server and channel: {ctx.guild} - #{ctx.channel}. Ignoring exception in command {ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
+            logging.warning(log_message)
+            print("[ERROR] " + log_message)
+
+        else:
+            log_message = f"Invoked by: {ctx.author}. During {ctx.command}. Server and channel: {ctx.guild} - #{ctx.channel}. Ignoring exception in command {ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
+            logging.warning(log_message)
+            print("[ERROR] " + log_message)
 
 def setup(bot):
     bot.add_cog(Games(bot))

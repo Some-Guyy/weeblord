@@ -1,7 +1,11 @@
 import discord
+import logging
+
+# Initialise logging.
+logging.basicConfig(filename = 'logs/basic.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
 
 # Bot version
-version = "2.0.0-alpha2"
+version = "2.0.0-alpha3"
 
 # New - The Cog class must extend the commands.Cog class
 class Basic(discord.Cog):
@@ -33,6 +37,7 @@ class Basic(discord.Cog):
             # Get a list of all commands under each cog
             cog_commands = self.bot.get_cog(cog).get_commands()
             commands_list = ""
+
             for comm in cog_commands:
                 commands_list += f"{comm.name}\n"
             
@@ -45,6 +50,12 @@ class Basic(discord.Cog):
                 value = commands_list,
                 inline = False
             )
+        
+        help_embed.add_field(
+            name = '\u200b',
+            value = "Type `/<command name>` to learn more and try it out!",
+            inline = False
+        )
 
         await ctx.respond(embed = help_embed)
 
@@ -56,11 +67,13 @@ class Basic(discord.Cog):
     @discord.option('number', description = "How big you want your dice to be?")
     async def roll(self, ctx, number: int):
         number = int(number)
+
         if number > 500:
             await ctx.respond("Oops, I ran out of dice to roll...")
             return
 
         roll_text = ""
+
         if number == 0:
             roll_text += "_ _"
         elif number < 0:
@@ -71,7 +84,6 @@ class Basic(discord.Cog):
                 roll_text += "roll"
 
         await ctx.respond(roll_text)
-
 
 def setup(bot):
     bot.add_cog(Basic(bot))

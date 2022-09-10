@@ -1,7 +1,15 @@
 import discord
+import logging
 import nltk
 import os
 from dotenv import load_dotenv
+
+# Create logs directory if it doesn't exist.
+if not os.path.exists("./logs"):
+    os.makedirs("./logs")
+
+# Initialise logging.
+logging.basicConfig(filename = 'logs/weeblord.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
 
 load_dotenv() # Load all the variables from the env file.
 
@@ -17,9 +25,9 @@ for resource in nltk_resources:
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = discord.Bot(debug_guilds=[275926238504419328], intents = intents)
+bot = discord.Bot(debug_guilds=[275926238504419328, 625670916658954240], intents = intents)
 
-cogs_list = ['basic', 'fun']
+cogs_list = ['basic', 'fun', 'games']
 
 for cog in cogs_list:
     bot.load_extension(f"cogs.{cog}")

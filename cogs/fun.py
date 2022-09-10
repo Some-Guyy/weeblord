@@ -1,9 +1,13 @@
 import discord
+import logging
 
 import random
 from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
+
+# Initialise logging.
+logging.basicConfig(filename = 'logs/fun.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
 
 class Fun(discord.Cog):
     def __init__(self, bot):
@@ -47,20 +51,25 @@ class Fun(discord.Cog):
                 description = uwu(text),
                 color = discord.Colour.nitro_pink()
             )
+
             uwu_embed.set_author(
                 name = message.author.display_name,
                 icon_url = message.author.display_avatar
             )
+
             await ctx.respond(embed = uwu_embed)
+
         else:
             uwu_embed = discord.Embed(
                 description = uwu(text),
                 color = discord.Colour.nitro_pink()
             )
+
             uwu_embed.set_author(
                 name = ctx.author.display_name,
                 icon_url = ctx.author.display_avatar
             )
+
             await ctx.respond(embed = uwu_embed)
 
     @discord.slash_command(name = 'thesaurize', description = "Change each word of the previous message to a similar meaning.")
@@ -70,30 +79,39 @@ class Fun(discord.Cog):
             skip_words = ['who'] # Add certain words that don't work too well.
             tokenized_list = word_tokenize(input_string.lower())
             thesaurized_list = []
+
             for word in tokenized_list:
                 synset_list = wordnet.synsets(word)
                 thesaurized_word = word
                 try_count = 0
+
                 while thesaurized_word.lower() == word.lower():
                     try_count += 1
+
                     if try_count == 21:
                         break
                     if word.lower() in skip_words:
                         break
                     if len(word) < 3:
                         break
+
                     if len(synset_list) > 0:
                         usable_synset_list = []
+
                         for synset in synset_list:
                             if len(synset.lemmas()) > 1:
                                 usable_synset_list.append(synset)
+
                         if len(usable_synset_list) > 0:
                             thesaurized_word = random.choice(random.choice(usable_synset_list).lemmas()).name()
                         else:
                             break
+
                     else:
                         break
+
                 thesaurized_list.append(thesaurized_word)
+
             return TreebankWordDetokenizer().detokenize(thesaurized_list)
         
         if text == None:
@@ -106,26 +124,32 @@ class Fun(discord.Cog):
                 return
 
             text = thesaurize_string(text)
+
             tsr_embed = discord.Embed(
                 description = text,
                 color = discord.Colour.og_blurple()
             )
+
             tsr_embed.set_author(
                 name = message.author.display_name,
                 icon_url = message.author.display_avatar
             )
+
             await ctx.respond(embed = tsr_embed)
 
         else:
             text = thesaurize_string(text)
+
             tsr_embed = discord.Embed(
                 description = text,
                 color = discord.Colour.og_blurple()
             )
+
             tsr_embed.set_author(
                 name = ctx.author.display_name,
                 icon_url = ctx.author.display_avatar
             )
+            
             await ctx.respond(embed = tsr_embed)
 
 def setup(bot):

@@ -3,6 +3,7 @@ from discord.ext import commands
 import logging
 import sys
 import traceback
+import asyncio
 
 import random
 from nltk.corpus import wordnet
@@ -311,7 +312,21 @@ class Games(discord.Cog):
                 # Player move
                 valid = 'no'
                 while valid == 'no':
-                    move_message = await self.bot.wait_for('message', check = check, timeout = 30)
+                    try:
+                        move_message = await self.bot.wait_for('message', check = check, timeout = 30)
+                    except asyncio.TimeoutError:
+                        logging.info(f"{ctx.author} took to long to respond during Charge in {ctx.guild} - #{ctx.channel}")
+                        charge_embed = discord.Embed(
+                            title = 'Charge!',
+                            description = f"{ctx.author.display_name}, you took too long to respond!\n{self.bot.user.display_name} WINS! :tada:"
+                        )
+
+                        charge_embed.color = discord.Colour.red()
+                        charge_embed.set_thumbnail(url = self.bot.user.display_avatar)
+                        await ctx.send(embed = charge_embed)
+                        ctx.command.reset_cooldown(ctx)
+                        return
+
                     if move_message.content[:2].lower() == 'c ':
                         await ctx.channel.trigger_typing()
                         player_move = move_message.content[2:].lower()
@@ -463,17 +478,6 @@ class Games(discord.Cog):
             logging.info(f"{ctx.author} tried to run {ctx.command} in {ctx.guild} - #{ctx.channel} while an instance is already running.")
             await ctx.respond(f"A game of {ctx.command} is already running on this channel!")
 
-        elif isinstance(error, discord.errors.ApplicationCommandInvokeError):
-            logging.info(f"{ctx.author} took to long to respond during Charge in {ctx.guild} - #{ctx.channel}")
-            charge_embed = discord.Embed(
-                title = 'Charge!',
-                description = f"{ctx.author.display_name}, you took too long to respond!\n{self.bot.user.display_name} WINS! :tada:"
-            )
-            charge_embed.color = discord.Colour.red()
-            charge_embed.set_thumbnail(url = self.bot.user.display_avatar)
-            await ctx.send(embed = charge_embed)
-            ctx.command.reset_cooldown(ctx)
-
         else:
             log_message = f"Invoked by: {ctx.author}. During {ctx.command}. Server and channel: {ctx.guild} - #{ctx.channel}. Ignoring exception in command {ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"
             logging.warning(log_message)
@@ -617,7 +621,18 @@ class Games(discord.Cog):
             guessed = 'no'
 
             while guessed == 'no':
-                player_message = await self.bot.wait_for('message', check = check, timeout = 120)
+                try:
+                    player_message = await self.bot.wait_for('message', check = check, timeout = 120)
+                except asyncio.TimeoutError:
+                    logging.info(f"No one responded for too long during {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}")
+                    wm_embed = discord.Embed(
+                        title = what_movie_title,
+                        description = f"No one responded. :shrug:\nGame over.",
+                        color = discord.Colour.red()
+                    )
+                    await ctx.send(embed = wm_embed)
+                    ctx.command.reset_cooldown(ctx)
+                    return
 
                 if player_message.content[:3].lower() == 'wm ':
                     player_guess = player_message.content[3:].lower()
@@ -712,16 +727,6 @@ class Games(discord.Cog):
         if isinstance(error, commands.CommandOnCooldown):
             logging.info(f"{ctx.author} tried to run {ctx.command} in {ctx.guild} - #{ctx.channel} while an instance is already running.")
             await ctx.respond(f"A game of {ctx.command} is already running on this channel!")
-
-        # elif isinstance(error, discord.errors.ApplicationCommandInvokeError):
-        #     logging.info(f"No one responded for too long during {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}")
-        #     wm_embed = discord.Embed(
-        #         title = what_movie_title,
-        #         description = f"No one responded. :shrug:\nGame over.",
-        #         color = discord.Colour.red()
-        #     )
-        #     await ctx.send(embed = wm_embed)
-        #     ctx.command.reset_cooldown(ctx)
 
         elif isinstance(error, IMDbError):
             log_message = f"IMDbError invoked by: {ctx.author}. During {ctx.command}. Server and channel: {ctx.guild} - #{ctx.channel}. Ignoring exception in command {ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"

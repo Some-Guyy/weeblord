@@ -629,7 +629,7 @@ class Games(discord.Cog):
                     else:
                         await ctx.channel.trigger_typing()
 
-                        if similar(movie['title'].lower(), player_guess) < 0.7:
+                        if similar(movie['title'].lower(), player_guess) < 0.7: # Threshold for the guess.
                             lives -= 1
 
                             if lives == 1:
@@ -689,7 +689,7 @@ class Games(discord.Cog):
                     description = f"{player_message.author.display_name} got it right! :tada:\nThe movie is [{movie['title']}](https://imdb.com/title/tt{movie_id})",
                     color = discord.Colour.green()
                 )
-                wm_embed.set_thumbnail(url = player_message.author.avatar_url)
+                wm_embed.set_thumbnail(url = player_message.author.display_avatar)
                 if movie['cover url'] is not None:
                     wm_embed.set_image(url = movie['cover url'])
 
@@ -713,15 +713,15 @@ class Games(discord.Cog):
             logging.info(f"{ctx.author} tried to run {ctx.command} in {ctx.guild} - #{ctx.channel} while an instance is already running.")
             await ctx.respond(f"A game of {ctx.command} is already running on this channel!")
 
-        elif isinstance(error, discord.errors.ApplicationCommandInvokeError):
-            logging.info(f"No one responded for too long during {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}")
-            wm_embed = discord.Embed(
-                title = what_movie_title,
-                description = f"No one responded. :shrug:\nGame over.",
-                color = discord.Colour.red()
-            )
-            await ctx.send(embed = wm_embed)
-            ctx.command.reset_cooldown(ctx)
+        # elif isinstance(error, discord.errors.ApplicationCommandInvokeError):
+        #     logging.info(f"No one responded for too long during {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}")
+        #     wm_embed = discord.Embed(
+        #         title = what_movie_title,
+        #         description = f"No one responded. :shrug:\nGame over.",
+        #         color = discord.Colour.red()
+        #     )
+        #     await ctx.send(embed = wm_embed)
+        #     ctx.command.reset_cooldown(ctx)
 
         elif isinstance(error, IMDbError):
             log_message = f"IMDbError invoked by: {ctx.author}. During {ctx.command}. Server and channel: {ctx.guild} - #{ctx.channel}. Ignoring exception in command {ctx.command}: {traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)}"

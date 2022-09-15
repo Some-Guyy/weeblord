@@ -28,7 +28,11 @@ intents.message_content = True
 if os.getenv('DEBUG_GUILDS') == None:
     bot = discord.Bot(intents = intents, activity = discord.Game(name = "( ͡° ͜ʖ ͡°) | /help"))
 else:
-    bot = discord.Bot(debug_guilds = list(os.getenv('DEBUG_GUILDS').split(',')), intents = intents, activity = discord.Game(name = "( ͡° ͜ʖ ͡°) | /help"))
+    guilds = list(os.getenv('DEBUG_GUILDS').split(','))
+    print(guilds)
+    print(type(guilds))
+    bot = discord.Bot(debug_guilds = guilds, intents = intents, activity = discord.Game(name = "( ͡° ͜ʖ ͡°) | /help"))
+    print("[INFO] If a forbidden 403 error appears, its ignorable as it only appears in development and does not seem to affect anything even during development.")
 
 cogs_list = ['basic', 'fun', 'games']
 

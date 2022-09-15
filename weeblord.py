@@ -25,7 +25,10 @@ for resource in nltk_resources:
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = discord.Bot(intents = intents, activity = discord.Game(name = "( ͡° ͜ʖ ͡°) | /help"))
+if os.getenv('DEBUG_GUILDS') == None:
+    bot = discord.Bot(intents = intents, activity = discord.Game(name = "( ͡° ͜ʖ ͡°) | /help"))
+else:
+    bot = discord.Bot(debug_guilds = list(os.getenv('DEBUG_GUILDS').split(',')), intents = intents, activity = discord.Game(name = "( ͡° ͜ʖ ͡°) | /help"))
 
 cogs_list = ['basic', 'fun', 'games']
 

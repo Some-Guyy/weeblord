@@ -95,7 +95,7 @@ class Games(discord.Cog):
             'boom': {'cost': 2, 'status': 'attack', 'stylized': ':boom:Boom', 'cost_info': "2", 'description': "Level 2 Attack"},
             'slash': {'cost': 2, 'status': 'attack', 'stylized': ':crossed_swords:Slash', 'cost_info': "2", 'description': "Level 2 Attack"},
             'smash': {'cost': 4, 'status': 'attack', 'stylized': ':wind_blowing_face:Smash', 'cost_info': "4", 'description': "Max Level Attack"},
-            'stop': {'cost': 0, 'status': 'dead', 'stylized': ':flag_white: Gave up', 'cost_info': "Your loss", 'description': "Give up!"}
+            'giveup': {'cost': 0, 'status': 'dead', 'stylized': ':flag_white: Gave up', 'cost_info': "Your loss", 'description': "Give up!"}
         }
 
         if option == 'Help':
@@ -149,14 +149,14 @@ class Games(discord.Cog):
                     move = 'smash'
                 elif player.mana == 0:
                     move = random.choice(list(move_dict))
-                    while move == 'stop' or cpu.mana - move_dict[move]['cost'] < 0 or move_dict[move]['status'] == 'defence':
+                    while move == 'giveup' or cpu.mana - move_dict[move]['cost'] < 0 or move_dict[move]['status'] == 'defence':
                         move = random.choice(list(move_dict))
                 else:
                     if random.randrange(100) < 20:
                         move = 'charge'
                     else:
                         move = random.choice(list(move_dict))
-                        while move == 'stop' or cpu.mana - move_dict[move]['cost'] < 0:
+                        while move == 'giveup' or cpu.mana - move_dict[move]['cost'] < 0:
                             move = random.choice(list(move_dict))
 
                 return move
@@ -641,7 +641,7 @@ class Games(discord.Cog):
                     if player_guess == 'skipwm':
                         guessed = 'skip'
                     elif player_guess == 'giveup':
-                        guessed = 'stop'
+                        guessed = 'giveup'
                     else:
                         await ctx.channel.trigger_typing()
 
@@ -682,7 +682,7 @@ class Games(discord.Cog):
                 await ctx.send(embed = wm_embed)
                 continue # Restart method via while loop.
 
-            elif guessed == 'stop':
+            elif guessed == 'giveup':
                 wm_embed = discord.Embed(
                     title = what_movie_title,
                     description = f":no_entry_sign:\nGave up! Game Over.\nThe movie is [{movie['title']}](https://imdb.com/title/tt{movie_id})",

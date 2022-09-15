@@ -330,7 +330,8 @@ class Games(discord.Cog):
                     if move_message.content[:2].lower() == 'c ':
                         await ctx.channel.trigger_typing()
                         player_move = move_message.content[2:].lower()
-                        await move_message.delete()
+                        if ctx.channel.type is discord.ChannelType.text: # Delete only if its in a server channel.
+                            await move_message.delete()
                         valid = 'yes'
 
                 if player_move == 'help':
@@ -662,7 +663,8 @@ class Games(discord.Cog):
                                 inline = False
                             )
 
-                            await player_message.delete()
+                            if ctx.channel.type is discord.ChannelType.text: # Delete only if its in a server channel.
+                                await player_message.delete()
                             await wm_message.delete()
                             wm_message = await ctx.send(embed = wm_embed)
 

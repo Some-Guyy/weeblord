@@ -37,7 +37,8 @@ for cog in cogs_list:
 
 @bot.event
 async def on_ready():
-    # await bot.change_presence(activity = discord.Game(name = "( ͡° ͜ʖ ͡°) | /help"))
-    print(f"{bot.user} is ready and online!")
+    startup_message = f"{bot.user} is ready and online!"
+    logging.info(startup_message)
+    print(startup_message)
 
 bot.run(os.getenv('TOKEN'))

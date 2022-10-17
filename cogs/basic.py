@@ -4,7 +4,7 @@ import logging
 logging.basicConfig(filename = 'logs/weeblord.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
 
 # Bot version
-version = "2.0.7"
+version = "2.0.8"
 
 # New - The Cog class must extend the commands.Cog class
 class Basic(discord.Cog):

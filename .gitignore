@@ -1,14 +1,14 @@
-#Visual Studio Code
+# Visual Studio Code
 .vscode
 
-#Python Cache
+# Python Cache
 *.py[cod]
 __pycache__/
 
-#Others
+# Others
 Thumbs.db
 .DS_Store
 .env
 
-#Logging
-logs/
+# Application Data
+appdata/

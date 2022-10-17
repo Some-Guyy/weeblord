@@ -486,7 +486,7 @@ class Games(discord.Cog):
 
     @discord.slash_command(name = 'whatmovie', description = "Guess a random movie given a thesaurized plot!")
     @discord.option('category', description = "Category of movies.", choices = ['top', 'popular', 'shitty', 'marvel'], default = 'top')
-    @discord.option('lives', description = "Number of chances you can get it wrong.", min_value = 1, max_value = 10, default = 5)
+    @discord.option('lives', description = "Number of chances you can get it wrong.", min_value = 1, max_value = 10, default = 'unlimited')
     @commands.cooldown(1, 86400, commands.BucketType.channel)
     async def what_movie(self, ctx, category: str, lives: int):
         what_movie_title = "What movie is this?"
@@ -603,10 +603,10 @@ class Games(discord.Cog):
                 if len(thesaurized_plot) <= 2048:
                     long_plot = False
 
-            if lives > 1:
-                lives_string = 'lives'
-            else:
+            if lives == 1:
                 lives_string = 'life'
+            else:
+                lives_string = 'lives'
 
             wm_embed = discord.Embed(
                 title = what_movie_title,
@@ -646,12 +646,13 @@ class Games(discord.Cog):
                         await ctx.channel.trigger_typing()
 
                         if similar(movie['title'].lower(), player_guess) < 0.7: # Threshold for the guess.
-                            lives -= 1
+                            if isinstance(lives, int):
+                                lives -= 1
 
-                            if lives == 1:
-                                lives_string = 'life'
-                            elif lives == 0:
-                                break
+                                if lives == 1:
+                                    lives_string = 'life'
+                                elif lives == 0:
+                                    break
 
                             wm_embed = discord.Embed(
                                 title = what_movie_title,

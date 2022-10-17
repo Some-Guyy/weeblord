@@ -12,7 +12,7 @@ from nltk.tokenize.treebank import TreebankWordDetokenizer
 from difflib import SequenceMatcher
 from imdb import Cinemagoer, IMDbError
 
-logging.basicConfig(filename = 'logs/weeblord.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
+logging.basicConfig(filename = 'appdata/weeblord.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
 
 class Games(discord.Cog):
     def __init__(self, bot):

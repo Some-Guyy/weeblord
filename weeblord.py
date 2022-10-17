@@ -4,12 +4,12 @@ import nltk
 import os
 from dotenv import load_dotenv
 
-# Create logs directory if it doesn't exist.
-if not os.path.exists("./logs"):
-    os.makedirs("./logs")
+# Create appdata directory if it doesn't exist.
+if not os.path.exists("./appdata"):
+    os.makedirs("./appdata")
 
 # Initialise logging.
-logging.basicConfig(filename = 'logs/weeblord.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
+logging.basicConfig(filename = 'appdata/weeblord.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
 
 load_dotenv() # Load all the variables from the env file.
 

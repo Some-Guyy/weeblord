@@ -14,6 +14,48 @@ from imdb import Cinemagoer, IMDbError
 
 logging.basicConfig(filename = 'appdata/weeblord.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
 
+def thesaurize_string(input_string):
+    skip_words = ['who'] # Add certain words that don't work too well.
+    tokenized_list = word_tokenize(input_string.lower())
+    thesaurized_list = []
+
+    for word in tokenized_list:
+        synset_list = wordnet.synsets(word)
+        thesaurized_word = word
+        try_count = 0
+
+        while thesaurized_word.lower() == word.lower():
+            try_count += 1
+
+            if try_count == 21:
+                break
+            if word.lower() in skip_words:
+                break
+            if len(word) < 3:
+                break
+
+            if len(synset_list) > 0:
+                usable_synset_list = []
+
+                for synset in synset_list:
+                    if len(synset.lemmas()) > 1:
+                        usable_synset_list.append(synset)
+
+                if len(usable_synset_list) > 0:
+                    thesaurized_word = random.choice(random.choice(usable_synset_list).lemmas()).name()
+                else:
+                    break
+
+            else:
+                break
+
+        thesaurized_list.append(thesaurized_word)
+
+    return TreebankWordDetokenizer().detokenize(thesaurized_list)
+
+def similar(a, b):
+    return SequenceMatcher(None, a, b).ratio()
+
 class Games(discord.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -457,48 +499,6 @@ class Games(discord.Cog):
                         ]
                 }
             }
-
-            def thesaurize_string(input_string):
-                skip_words = ['who'] # Add certain words that don't work too well.
-                tokenized_list = word_tokenize(input_string.lower())
-                thesaurized_list = []
-
-                for word in tokenized_list:
-                    synset_list = wordnet.synsets(word)
-                    thesaurized_word = word
-                    try_count = 0
-
-                    while thesaurized_word.lower() == word.lower():
-                        try_count += 1
-
-                        if try_count == 21:
-                            break
-                        if word.lower() in skip_words:
-                            break
-                        if len(word) < 3:
-                            break
-
-                        if len(synset_list) > 0:
-                            usable_synset_list = []
-
-                            for synset in synset_list:
-                                if len(synset.lemmas()) > 1:
-                                    usable_synset_list.append(synset)
-
-                            if len(usable_synset_list) > 0:
-                                thesaurized_word = random.choice(random.choice(usable_synset_list).lemmas()).name()
-                            else:
-                                break
-
-                        else:
-                            break
-
-                    thesaurized_list.append(thesaurized_word)
-
-                return TreebankWordDetokenizer().detokenize(thesaurized_list)
-            
-            def similar(a, b):
-                return SequenceMatcher(None, a, b).ratio()
 
             def check(message: discord.Message):
                 # Look for the message sent in the same channel where the command was used

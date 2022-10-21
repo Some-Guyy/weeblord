@@ -462,51 +462,15 @@ class Games(discord.Cog):
             print("[ERROR] " + log_message)
 
     @discord.slash_command(name = 'wm', description = "WhatMovie: Guess a random movie given a thesaurized plot!")
-    @discord.option('category', description = "Category of movies.", choices = ['top', 'popular', 'shitty', 'marvel'], default = 'top')
-    @discord.option('lives', description = "Number of chances you can get it wrong.", min_value = 1, max_value = 10, default = 'unlimited')
+    @discord.option('category', description = "Category of movies. (Default: top)", choices = ['top', 'popular', 'shitty', 'marvel'], default = 'top')
+    @discord.option('mode', description = "Freeplay(default): Play at your own pace. Party: Challenge others to who can guess first!", choices = ['freeplay', 'party'], default = 'freeplay')
     @commands.cooldown(1, 86400, commands.BucketType.channel)
-    async def what_movie(self, ctx, category: str, lives: int):
-        what_movie_title = "What movie is this?"
-        what_movie_instructions = ":warning: Remember to FORMAT your message with `wm <guess>` when attempting to guess! Send `wm skipwm` to get a different movie, or `wm giveup` to give up."
+    async def what_movie(self, ctx, category: str, mode: str):
+        def check(message: discord.Message):
+            # Look for the message sent in the same channel where the command was used
+            return message.channel.id == ctx.channel.id
 
-        while True:
-            await ctx.channel.trigger_typing()
-            movie_dict = {
-                'marvel': {
-                    'id': [ # List of titles are manually added from here: https://en.wikipedia.org/wiki/List_of_films_based_on_Marvel_Comics_publications
-                        'tt0120611', 'tt0120903', 'tt0187738',
-                        'tt0145487', 'tt0287978', 'tt0290334',
-                        'tt0286716', 'tt0330793', 'tt0316654',
-                        'tt0359013', 'tt0357277', 'tt0120667',
-                        'tt0376994', 'tt0259324', 'tt0413300',
-                        'tt0486576', 'tt0371746', 'tt0800080',
-                        'tt0450314', 'tt0458525', 'tt1228705',
-                        'tt0800369', 'tt1270798', 'tt0458339',
-                        'tt1071875', 'tt0848228', 'tt0948470',
-                        'tt1300854', 'tt1430132', 'tt1981115',
-                        'tt1843866', 'tt1872181', 'tt1877832',
-                        'tt2015381', 'tt2395427', 'tt0478970',
-                        'tt1502712', 'tt1431045', 'tt3498820',
-                        'tt3385516', 'tt1211837', 'tt3315342',
-                        'tt3896198', 'tt2250912', 'tt3501632',
-                        'tt1825683', 'tt4154756', 'tt5463162',
-                        'tt5095030', 'tt1270797', 'tt4154664',
-                        'tt4154796', 'tt6565702', 'tt6320628',
-                        'tt2245084', 'tt4633694', 'tt4682266',
-                        'tt3480822', 'tt9376612', 'tt7097896',
-                        'tt9032400', 'tt10872600', 'tt5108870',
-                        'tt9419884', 'tt10648342', 'tt9114286'
-                        ]
-                }
-            }
-
-            def check(message: discord.Message):
-                # Look for the message sent in the same channel where the command was used
-                return message.channel.id == ctx.channel.id
-
-            await ctx.respond("Hmmm which movie shall I choose? :thinking: Lemme see...")
-            await ctx.channel.trigger_typing()
-
+        def get_movie(category):
             ia = Cinemagoer()
             if category == 'top':
                 top = ia.get_top250_movies()
@@ -537,126 +501,170 @@ class Games(discord.Cog):
                 thesaurized_plot = thesaurize_string(movie_plot)
                 if len(thesaurized_plot) <= 2048:
                     long_plot = False
+            
+            return movie, movie_id, thesaurized_plot
+        
+        message_timeout = 120
+        what_movie_title = "What movie is this?"
+        what_movie_instructions = ":warning: Remember to FORMAT your message with `wm <guess>` when attempting to guess! Send `wm skipwm` to get a different movie, or `wm giveup` to give up."
+        movie_dict = {
+            'marvel': {
+                'id': [ # List of titles are manually added from here: https://en.wikipedia.org/wiki/List_of_films_based_on_Marvel_Comics_publications
+                    'tt0120611', 'tt0120903', 'tt0187738',
+                    'tt0145487', 'tt0287978', 'tt0290334',
+                    'tt0286716', 'tt0330793', 'tt0316654',
+                    'tt0359013', 'tt0357277', 'tt0120667',
+                    'tt0376994', 'tt0259324', 'tt0413300',
+                    'tt0486576', 'tt0371746', 'tt0800080',
+                    'tt0450314', 'tt0458525', 'tt1228705',
+                    'tt0800369', 'tt1270798', 'tt0458339',
+                    'tt1071875', 'tt0848228', 'tt0948470',
+                    'tt1300854', 'tt1430132', 'tt1981115',
+                    'tt1843866', 'tt1872181', 'tt1877832',
+                    'tt2015381', 'tt2395427', 'tt0478970',
+                    'tt1502712', 'tt1431045', 'tt3498820',
+                    'tt3385516', 'tt1211837', 'tt3315342',
+                    'tt3896198', 'tt2250912', 'tt3501632',
+                    'tt1825683', 'tt4154756', 'tt5463162',
+                    'tt5095030', 'tt1270797', 'tt4154664',
+                    'tt4154796', 'tt6565702', 'tt6320628',
+                    'tt2245084', 'tt4633694', 'tt4682266',
+                    'tt3480822', 'tt9376612', 'tt7097896',
+                    'tt9032400', 'tt10872600', 'tt5108870',
+                    'tt9419884', 'tt10648342', 'tt9114286'
+                    ]
+            }
+        }
 
-            if lives == 1:
-                lives_string = 'life'
-            else:
-                lives_string = 'lives'
+        if mode == 'freeplay':
+            while True:
+                await ctx.respond("Hmmm which movie shall I choose? :thinking: Lemme see...")
+                await ctx.channel.trigger_typing()
 
-            wm_embed = discord.Embed(
-                title = what_movie_title,
-                description = f"You have **{lives}** {lives_string}\nCategory: {category}\n\n__**Plot**__\n{thesaurized_plot}",
-                color = discord.Colour.magenta()
-            ).add_field(
-                name = '\u200b',
-                value = what_movie_instructions,
-                inline = False
-            )
+                movie, movie_id, thesaurized_plot = get_movie(category)
 
-            wm_message = await ctx.send(embed = wm_embed)
-            guessed = 'no'
+                wm_embed = discord.Embed(
+                    title = what_movie_title,
+                    description = f"Category: {category}\n\n__**Plot**__\n{thesaurized_plot}",
+                    color = discord.Colour.magenta()
+                ).add_field(
+                    name = '\u200b',
+                    value = what_movie_instructions,
+                    inline = False
+                )
 
-            while guessed == 'no':
-                try:
-                    player_message = await self.bot.wait_for('message', check = check, timeout = 120)
-                except asyncio.TimeoutError:
-                    logging.info(f"No one responded for too long during {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}")
+                wm_message = await ctx.send(embed = wm_embed)
+                guessed = 'no'
+
+                while guessed == 'no':
+                    try:
+                        player_message = await self.bot.wait_for('message', check = check, timeout = message_timeout)
+                    except asyncio.TimeoutError:
+                        logging.info(f"No one responded for too long during {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}")
+                        wm_embed = discord.Embed(
+                            title = what_movie_title,
+                            description = f"No one responded. :shrug:\nGame over.",
+                            color = discord.Colour.red()
+                        )
+                        await ctx.send(embed = wm_embed)
+                        ctx.command.reset_cooldown(ctx)
+                        return
+
+                    if player_message.content[:3].lower() == 'wm ':
+                        player_guess = player_message.content[3:].lower()
+
+                        if player_guess == 'skipwm':
+                            guessed = 'skip'
+                        elif player_guess == 'giveup':
+                            guessed = 'giveup'
+                        else:
+                            await ctx.channel.trigger_typing()
+
+                            if similar(movie['title'].lower(), player_guess) < 0.7: # Threshold for the guess.
+                                wm_embed = discord.Embed(
+                                    title = what_movie_title,
+                                    description = f":x:\n{player_message.author.display_name} guessed *{player_guess}* and was wrong!\nCategory: {category}\n\n__**Plot**__\n{thesaurized_plot}",
+                                    color = discord.Colour.magenta()
+                                ).add_field(
+                                    name = '\u200b',
+                                    value = what_movie_instructions,
+                                    inline = False
+                                )
+
+                                if ctx.channel.type is discord.ChannelType.text: # Delete only if its in a server channel.
+                                    await player_message.delete()
+                                await wm_message.delete()
+                                wm_message = await ctx.send(embed = wm_embed)
+
+                            else:
+                                guessed = 'yes'
+
+                if guessed == 'skip':
                     wm_embed = discord.Embed(
                         title = what_movie_title,
-                        description = f"No one responded. :shrug:\nGame over.",
+                        description = f":no_entry_sign:\nSkipped!\nThe movie was [{movie['title']}](https://imdb.com/title/tt{movie_id})",
                         color = discord.Colour.red()
                     )
+                    if movie['cover url'] is not None:
+                        wm_embed.set_image(url = movie['cover url'])
                     await ctx.send(embed = wm_embed)
-                    ctx.command.reset_cooldown(ctx)
-                    return
+                    continue # Restart method via while loop.
 
-                if player_message.content[:3].lower() == 'wm ':
-                    player_guess = player_message.content[3:].lower()
+                elif guessed == 'giveup':
+                    wm_embed = discord.Embed(
+                        title = what_movie_title,
+                        description = f":no_entry_sign:\nGave up! Game Over.\nThe movie was [{movie['title']}](https://imdb.com/title/tt{movie_id})",
+                        color = discord.Colour.red()
+                    )
+                    if movie['cover url'] is not None:
+                        wm_embed.set_image(url = movie['cover url'])
 
-                    if player_guess == 'skipwm':
-                        guessed = 'skip'
-                    elif player_guess == 'giveup':
-                        guessed = 'giveup'
-                    else:
-                        await ctx.channel.trigger_typing()
-
-                        if similar(movie['title'].lower(), player_guess) < 0.7: # Threshold for the guess.
-                            if isinstance(lives, int):
-                                lives -= 1
-
-                                if lives == 1:
-                                    lives_string = 'life'
-                                elif lives == 0:
-                                    break
-
+                elif guessed == 'yes':
+                    wm_embed = discord.Embed(
+                        title = what_movie_title,
+                        description = f"{player_message.author.display_name} got it right! :tada:\nThe movie was [{movie['title']}](https://imdb.com/title/tt{movie_id})\nSend `wm next` to guess another movie! Or `wm stop` to stop the session.\nThe session will automatically close in {message_timeout // 2} minutes.",
+                        color = discord.Colour.green()
+                    )
+                    wm_embed.set_thumbnail(url = player_message.author.display_avatar)
+                    if movie['cover url'] is not None:
+                        wm_embed.set_image(url = movie['cover url'])
+                    
+                    try:
+                        player_message = await self.bot.wait_for('message', check = check, timeout = message_timeout)
+                    except asyncio.TimeoutError:
+                        ctx.command.reset_cooldown(ctx)
+                        return
+                    
+                    if player_message.content[:3].lower() == 'wm ':
+                        player_command = player_message.content[3:].lower()
+                        if player_command == 'next':
+                            continue
+                        elif player_command == 'stop':
+                            await ctx.send("Session closed!")
+                            ctx.command.reset_cooldown(ctx)
+                            return
+                        else:
+                            log_message = f"User command is {player_command} which is not valid during a {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}."
+                            logging.warning(log_message)
                             wm_embed = discord.Embed(
                                 title = what_movie_title,
-                                description = f":x:\n{player_message.author.display_name} guessed *{player_guess}* and was wrong!\nYou have **{lives}** {lives_string} left!\nCategory: {category}\n\n__**Plot**__\n{thesaurized_plot}",
-                                color = discord.Colour.magenta()
-                            ).add_field(
-                                name = '\u200b',
-                                value = what_movie_instructions,
-                                inline = False
+                                description = log_message
                             )
 
-                            if ctx.channel.type is discord.ChannelType.text: # Delete only if its in a server channel.
-                                await player_message.delete()
-                            await wm_message.delete()
-                            wm_message = await ctx.send(embed = wm_embed)
+                else:
+                    log_message = f"Guessed variable is {guessed} which is not valid during a {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}."
+                    logging.warning(log_message)
+                    wm_embed = discord.Embed(
+                        title = what_movie_title,
+                        description = log_message
+                    )
 
-                        else:
-                            guessed = 'yes'
-
-            if guessed == 'skip':
-                wm_embed = discord.Embed(
-                    title = what_movie_title,
-                    description = f":no_entry_sign:\nSkipped! Game Over.\nThe movie is [{movie['title']}](https://imdb.com/title/tt{movie_id})",
-                    color = discord.Colour.red()
-                )
-                if movie['cover url'] is not None:
-                    wm_embed.set_image(url = movie['cover url'])
                 await ctx.send(embed = wm_embed)
-                continue # Restart method via while loop.
-
-            elif guessed == 'giveup':
-                wm_embed = discord.Embed(
-                    title = what_movie_title,
-                    description = f":no_entry_sign:\nGave up! Game Over.\nThe movie is [{movie['title']}](https://imdb.com/title/tt{movie_id})",
-                    color = discord.Colour.red()
-                )
-                if movie['cover url'] is not None:
-                    wm_embed.set_image(url = movie['cover url'])
-
-            elif lives == 0:
-                wm_embed = discord.Embed(
-                    title = what_movie_title,
-                    description = f":broken_heart:\nNo more lives! Game Over.\nThe movie is [{movie['title']}](https://imdb.com/title/tt{movie_id})",
-                    color = discord.Colour.red()
-                )
-                if movie['cover url'] is not None:
-                    wm_embed.set_image(url = movie['cover url'])
-
-            elif guessed == 'yes':
-                wm_embed = discord.Embed(
-                    title = what_movie_title,
-                    description = f"{player_message.author.display_name} got it right! :tada:\nThe movie is [{movie['title']}](https://imdb.com/title/tt{movie_id})",
-                    color = discord.Colour.green()
-                )
-                wm_embed.set_thumbnail(url = player_message.author.display_avatar)
-                if movie['cover url'] is not None:
-                    wm_embed.set_image(url = movie['cover url'])
-
-            else:
-                log_message = f"No one guessed right and lives were still above 0 during a {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}."
-                logging.warning(log_message)
-                wm_embed = discord.Embed(
-                    title = what_movie_title,
-                    description = log_message
-                )
-
-            await ctx.send(embed = wm_embed)
-            ctx.command.reset_cooldown(ctx)
-            return # To break out of the while loop.
+                ctx.command.reset_cooldown(ctx)
+                return # To break out of the while loop.
+        
+        elif mode == 'party':
+            await ctx.respond("Partyyyy")
 
     @what_movie.error
     async def what_movie_handler(self, ctx, error):

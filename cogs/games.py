@@ -660,8 +660,6 @@ class Games(discord.Cog):
 
     @what_movie.error
     async def what_movie_handler(self, ctx, error):
-        what_movie_title = 'What movie is this?'
-
         if isinstance(error, commands.CommandOnCooldown):
             logging.info(f"{ctx.author} tried to run {ctx.command} in {ctx.guild} - #{ctx.channel} while an instance is already running.")
             await ctx.respond(f"A game of {ctx.command} is already running on this channel!")

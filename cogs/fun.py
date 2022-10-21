@@ -71,7 +71,7 @@ class Fun(discord.Cog):
 
             await ctx.respond(embed = uwu_embed)
 
-    @discord.slash_command(name = 'thesaurize', description = "Change each word of the previous message to a similar meaning.")
+    @discord.slash_command(name = 'tsr', description = "Thesaurize: Change each word of the previous message to a similar meaning.")
     @discord.option('text', description = "Thesaurize a certain text instead.", required = False)
     async def thesaurize(self, ctx, text: str):
         def thesaurize_string(input_string):

@@ -419,7 +419,7 @@ class Games(discord.Cog):
             logging.warning(log_message)
             print("[ERROR] " + log_message)
 
-    @discord.slash_command(name = 'whatmovie', description = "Guess a random movie given a thesaurized plot!")
+    @discord.slash_command(name = 'wm', description = "WhatMovie: Guess a random movie given a thesaurized plot!")
     @discord.option('category', description = "Category of movies.", choices = ['top', 'popular', 'shitty', 'marvel'], default = 'top')
     @discord.option('lives', description = "Number of chances you can get it wrong.", min_value = 1, max_value = 10, default = 'unlimited')
     @commands.cooldown(1, 86400, commands.BucketType.channel)

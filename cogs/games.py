@@ -14,6 +14,9 @@ from imdb import Cinemagoer, IMDbError
 
 logging.basicConfig(filename = 'appdata/weeblord.log', encoding = 'utf-8', format = '%(asctime)s - %(levelname)s - %(message)s', level = logging.DEBUG)
 
+session_idle_timeout = 120
+session_join_timeout = 20
+
 def thesaurize_string(input_string):
     skip_words = ['who'] # Add certain words that don't work too well.
     tokenized_list = word_tokenize(input_string.lower())
@@ -504,7 +507,6 @@ class Games(discord.Cog):
             
             return movie, movie_id, thesaurized_plot
         
-        message_timeout = 120
         what_movie_title = "What movie is this?"
         what_movie_instructions = ":warning: Remember to FORMAT your message with `wm <guess>` when attempting to guess! Send `wm skipwm` to get a different movie, or `wm giveup` to give up."
         movie_dict = {
@@ -558,7 +560,7 @@ class Games(discord.Cog):
 
                 while guessed == 'no':
                     try:
-                        player_message = await self.bot.wait_for('message', check = check, timeout = message_timeout)
+                        player_message = await self.bot.wait_for('message', check = check, timeout = session_idle_timeout)
                     except asyncio.TimeoutError:
                         logging.info(f"No one responded for too long during {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}")
                         wm_embed = discord.Embed(
@@ -618,53 +620,74 @@ class Games(discord.Cog):
                     )
                     if movie['cover url'] is not None:
                         wm_embed.set_image(url = movie['cover url'])
+                    await ctx.send(embed = wm_embed)
+                    ctx.command.reset_cooldown(ctx)
+                    return
 
                 elif guessed == 'yes':
                     wm_embed = discord.Embed(
                         title = what_movie_title,
-                        description = f"{player_message.author.display_name} got it right! :tada:\nThe movie was [{movie['title']}](https://imdb.com/title/tt{movie_id})\nSend `wm next` to guess another movie! Or `wm stop` to stop the session.\nThe session will automatically close in {message_timeout // 2} minutes.",
+                        description = f"{player_message.author.display_name} got it right! :tada:\nThe movie was [{movie['title']}](https://imdb.com/title/tt{movie_id})\nSend `wm` to try again, or `stop` to close the current session.",
                         color = discord.Colour.green()
                     )
                     wm_embed.set_thumbnail(url = player_message.author.display_avatar)
                     if movie['cover url'] is not None:
                         wm_embed.set_image(url = movie['cover url'])
+                    await ctx.send(embed = wm_embed)
                     
                     try:
-                        player_message = await self.bot.wait_for('message', check = check, timeout = message_timeout)
+                        player_message = await self.bot.wait_for('message', check = check, timeout = session_idle_timeout)
                     except asyncio.TimeoutError:
                         ctx.command.reset_cooldown(ctx)
                         return
                     
-                    if player_message.content[:3].lower() == 'wm ':
-                        player_command = player_message.content[3:].lower()
-                        if player_command == 'next':
-                            continue
-                        elif player_command == 'stop':
-                            await ctx.send("Session closed!")
-                            ctx.command.reset_cooldown(ctx)
-                            return
-                        else:
-                            log_message = f"User command is {player_command} which is not valid during a {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}."
-                            logging.warning(log_message)
-                            wm_embed = discord.Embed(
-                                title = what_movie_title,
-                                description = log_message
-                            )
+                    if player_message.content.lower() == 'wm':
+                        continue
+                    elif player_message.content.lower() == 'stop':
+                        await ctx.send("Session closed!")
+                        ctx.command.reset_cooldown(ctx)
+                        return
 
                 else:
-                    log_message = f"Guessed variable is {guessed} which is not valid during a {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}."
+                    log_message = f"Guessed variable is `{guessed}` which is not valid during a {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}."
                     logging.warning(log_message)
                     wm_embed = discord.Embed(
                         title = what_movie_title,
                         description = log_message
                     )
+                    await ctx.send(embed = wm_embed)
+                    ctx.command.reset_cooldown(ctx)
+                    return
 
+                log_message = f"Code should not reach the end of a freeplay loop during a {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}."
+                logging.warning(log_message)
+                wm_embed = discord.Embed(
+                    title = what_movie_title,
+                    description = log_message
+                )
                 await ctx.send(embed = wm_embed)
-                ctx.command.reset_cooldown(ctx)
-                return # To break out of the while loop.
+                break # Stop loop if code ever reaches here.
         
         elif mode == 'party':
-            await ctx.respond("Partyyyy")
+            await ctx.respond(f"{ctx.author.display_name} started a game of WhatMovie. Send `wm` to join! Game starts in {session_join_timeout} seconds. {ctx.author.display_name} can kickstart the game by sending `wm start`.")
+            
+            while True:
+                try:
+                    user_message = await self.bot.wait_for('message', check = check, timeout = session_join_timeout)
+                except asyncio.TimeoutError:
+                    await ctx.send("timeout gamestart!")
+                    break
+                if user_message.content.lower() == 'wm':
+                    await ctx.send(f"User ID: {user_message.author.id}")
+                    continue
+                elif user_message.content.lower() == 'wm start':
+                    if user_message.author.id == ctx.author.id:
+                        await ctx.send("forced gamestart!")
+                        break
+            
+            await ctx.send("session ended.")
+
+        ctx.command.reset_cooldown(ctx) # Reset cooldown if code ends up here.
 
     @what_movie.error
     async def what_movie_handler(self, ctx, error):

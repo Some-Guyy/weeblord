@@ -545,7 +545,7 @@ class Games(discord.Cog):
 
                 wm_embed = discord.Embed(
                     title = what_movie_title,
-                    description = f"Movie category: **{category}**\n\n__**Plot**__",
+                    description = f"Movie category: **{category}**",
                     color = discord.Colour.magenta()
                 )
 
@@ -555,7 +555,7 @@ class Games(discord.Cog):
                         if i == 0:
                             wm_embed.add_field(
                                 name = '\u200b',
-                                value = f"{thesaurized_plot[:(i+1)*1000]}...",
+                                value = f"__**Plot**__\n{thesaurized_plot[:(i+1)*1000]}...",
                                 inline = False
                             )
                         elif i-1 == -(len(thesaurized_plot) // -1000):
@@ -573,7 +573,7 @@ class Games(discord.Cog):
                 else:
                     wm_embed.add_field(
                             name = '\u200b',
-                            value = thesaurized_plot,
+                            value = f"__**Plot**__\n{thesaurized_plot}",
                             inline = False
                         )
                 
@@ -593,9 +593,11 @@ class Games(discord.Cog):
                         logging.info(f"No one responded for too long during {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}")
                         wm_embed = discord.Embed(
                             title = what_movie_title,
-                            description = f"No one responded. :shrug:\nGame over.",
+                            description = f"No one responded for too long. :shrug:\nGame over.\nThe movie was [{movie['title']}](https://imdb.com/title/tt{movie_id})",
                             color = discord.Colour.red()
                         )
+                        if movie['cover url'] is not None:
+                            wm_embed.set_image(url = movie['cover url'])
                         await ctx.send(embed = wm_embed)
                         ctx.command.reset_cooldown(ctx)
                         return
@@ -616,7 +618,7 @@ class Games(discord.Cog):
                         if guess_score < 0.7: # Threshold for the guess.
                             wm_embed = discord.Embed(
                                 title = what_movie_title,
-                                description = f"{player_last_guessed} guessed __{player_guess}__ and was wrong! :x:\nMovie category: **{category}**\n\n__**Plot**__",
+                                description = f"{player_last_guessed} guessed __{player_guess}__ and was wrong! :x:\nMovie category: **{category}**",
                                 color = discord.Colour.magenta()
                             )
 
@@ -625,7 +627,7 @@ class Games(discord.Cog):
                                     if i == 0:
                                         wm_embed.add_field(
                                             name = '\u200b',
-                                            value = f"{thesaurized_plot[:(i+1)*1000]}...",
+                                            value = f"__**Plot**__\n{thesaurized_plot[:(i+1)*1000]}...",
                                             inline = False
                                         )
                                     elif i-1 == -(len(thesaurized_plot) // -1000):
@@ -643,7 +645,7 @@ class Games(discord.Cog):
                             else:
                                 wm_embed.add_field(
                                         name = '\u200b',
-                                        value = thesaurized_plot,
+                                        value = f"__**Plot**__\n{thesaurized_plot}",
                                         inline = False
                                     )
                             
@@ -802,7 +804,7 @@ class Games(discord.Cog):
                         if i == 0:
                             wm_embed.add_field(
                                 name = '\u200b',
-                                value = f"{thesaurized_plot[:(i+1)*1000]}...",
+                                value = f"__**Plot**__\n{thesaurized_plot[:(i+1)*1000]}...",
                                 inline = False
                             )
                         elif i-1 == -(len(thesaurized_plot) // -1000):
@@ -820,7 +822,7 @@ class Games(discord.Cog):
                 else:
                     wm_embed.add_field(
                             name = '\u200b',
-                            value = thesaurized_plot,
+                            value = f"__**Plot**__\n{thesaurized_plot}",
                             inline = False
                         )
                 
@@ -927,9 +929,11 @@ class Games(discord.Cog):
                         logging.info(f"No one responded for too long during {ctx.command} invoked by {ctx.author} in {ctx.guild} - #{ctx.channel}")
                         wm_embed = discord.Embed(
                             title = what_movie_title,
-                            description = f"No one responded. :shrug:\nGame over.",
+                            description = f"No one responded for too long. :shrug:\nGame over.\nThe movie was [{movie['title']}](https://imdb.com/title/tt{movie_id})",
                             color = discord.Colour.red()
                         )
+                        if movie['cover url'] is not None:
+                            wm_embed.set_image(url = movie['cover url'])
                         await ctx.send(embed = wm_embed)
                         ctx.command.reset_cooldown(ctx)
                         return

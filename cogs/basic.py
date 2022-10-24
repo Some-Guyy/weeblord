@@ -23,7 +23,7 @@ class Basic(discord.Cog):
         # Prepare the embed
         help_embed = discord.Embed(
             title = 'Help',
-            description = "What can I do for you?\n",
+            description = "( ͡° ͜ʖ ͡°)\n",
             color = discord.Colour.brand_green(),
         ).set_author(
             name = self.bot.user.display_name,
@@ -73,7 +73,7 @@ class Basic(discord.Cog):
 
         help_embed.add_field(
             name = 'Acknowledgements',
-            value = f"This bot was created using [Pycord](https://pycord.dev/), together with other open source libraries!\n\u200b\n__Libraries__{libraries}\n\u200b",
+            value = f"This bot was created using [Pycord](https://pycord.dev/), together with other open source libraries listed below!\n\u200b\n__Libraries__{libraries}\n\u200b",
             inline = False
         )
 

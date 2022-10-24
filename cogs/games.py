@@ -875,7 +875,14 @@ class Games(discord.Cog):
 
                 elif user_message.content.lower() == 'wm start':
                     await ctx.channel.trigger_typing()
-                    if user_message.author.id in participants:
+
+                    if len(participants) < 2:
+                        if ctx.channel.type is discord.ChannelType.text: # Delete only if its in a server channel.
+                            await user_message.delete()
+                        await ctx.send(f"You can't play party mode all by yourself! If you're a loner send `wm stop` and go play freeplay mode with `/wm mode:freeplay`.")
+                        continue
+
+                    elif user_message.author.id in participants:
                         if ctx.channel.type is discord.ChannelType.text: # Delete only if its in a server channel.
                             await user_message.delete()
                         break

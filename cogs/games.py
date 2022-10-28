@@ -740,29 +740,51 @@ class Games(discord.Cog):
                 point_list = ""
 
                 if win_board:
+                    points = [participants[player]['point'] for player in participants]
                     player_count = 1
+                    no_2nd = False
+                    multi_2nd = False
+                    multi_3rd = False
 
-                    if len(participants) < 3:
-                        duo_match = True
+                    # If the losers all have the same points, no 2nd place.
+                    if len(set(points)) == 2:
+                        no_2nd = True
                     else:
-                        duo_match = False
+                        # If there are multiple players with 2nd highest points or 3rd highest points.
+                        if points.count(sorted_players[1][1]['point']) > 1:
+                            multi_2nd = True
+                        elif points.count(sorted_players[2][1]['point']) > 1:
+                            multi_3rd = True
 
                     for player in sorted_players:
-                        if player_count == 1:
-                            if duo_match:
+                        if no_2nd:
+                            if player_count == 1:
                                 player_list += ":crown:"
-                            else:
+                        
+                        elif multi_2nd:
+                            if player_count == 1:
                                 player_list += ":first_place:"
 
-                        elif player_count == 2:
-                            player_2nd_points = player[1]['point']
-                            if not duo_match:
+                            # If player has same points as 2nd highest points.
+                            elif player[1]['point'] == sorted_players[1][1]['point']:
                                 player_list += ":second_place:"
 
-                        elif player_count == 3:
-                            if player[1]['point'] == player_2nd_points:
+                        elif multi_3rd:
+                            if player_count == 1:
+                                player_list += ":first_place:"
+                            elif player_count == 2:
                                 player_list += ":second_place:"
-                            else:
+
+                            # If player has same points as 3rd highest points.
+                            elif player[1]['point'] == sorted_players[2][1]['point']:
+                                player_list += ":third_place:"
+
+                        else:
+                            if player_count == 1:
+                                player_list += ":first_place:"
+                            elif player_count == 2:
+                                player_list += ":second_place:"
+                            elif player_count == 3:
                                 player_list += ":third_place:"
                         
                         player_list += f"{player[1]['name']}\n"

@@ -16,6 +16,7 @@ logging.basicConfig(filename = 'appdata/weeblord.log', encoding = 'utf-8', forma
 
 charge_timeout = 30
 wm_timeout = 120
+guess_threshold = 0.7
 
 def thesaurize_string(input_string):
     skip_words = ['who'] # Add certain words that don't work too well.
@@ -615,7 +616,7 @@ class Games(discord.Cog):
                         await ctx.channel.trigger_typing()
 
                         guess_score = similar(movie['title'].lower(), player_guess)
-                        if guess_score < 0.7: # Threshold for the guess.
+                        if guess_score < guess_threshold: # Threshold for the guess.
                             wm_embed = discord.Embed(
                                 title = what_movie_title,
                                 description = f"{player_last_guessed} guessed __{player_guess}__ and was wrong! :x:\nMovie category: **{category}**",
@@ -1006,7 +1007,7 @@ class Games(discord.Cog):
                             await ctx.channel.trigger_typing()
                             guess_score = similar(movie['title'].lower(), player_guess)
 
-                            if guess_score < 0.7: # Threshold for the guess.
+                            if guess_score < guess_threshold: # Threshold for the guess.
                                 guess_event = f"{player_last_guessed} guessed __{player_guess}__ and was wrong! :x:\n"
                                 embed_color = discord.Colour.magenta()
                                 wm_embed = get_party_embed(what_movie_title, what_movie_instructions, round_num, guess_event, embed_color, win_point, player_list, point_list, thesaurized_plot)

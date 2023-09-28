@@ -9,6 +9,7 @@ __pycache__/
 Thumbs.db
 .DS_Store
 .env
+.python-version
 
 # Application Data
 appdata/
